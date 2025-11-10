@@ -1,3 +1,4 @@
+package main.java.enums;
 public enum Category {
     RETREAT("자연/휴양"),
     EXPLORATION("도시/문화 탐방"),
