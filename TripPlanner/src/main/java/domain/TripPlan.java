@@ -1,7 +1,6 @@
 package main.java.domain;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import main.java.mgr.Manageable;
 
 public class TripPlan implements Manageable{
@@ -28,4 +27,6 @@ public class TripPlan implements Manageable{
         return false;
     }
 
+
+    
 }
