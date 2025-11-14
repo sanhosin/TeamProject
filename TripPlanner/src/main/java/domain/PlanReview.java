@@ -1,6 +1,6 @@
 package main.java.domain;
 import java.util.Scanner;
-///
+///ss
 import main.java.mgr.Manageable;
 
 public class PlanReview implements Manageable {
