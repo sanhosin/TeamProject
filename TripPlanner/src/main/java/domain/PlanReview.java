@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 import main.java.mgr.Manageable;
 
+
 public class PlanReview implements Manageable {
     TripPlan targetPlan;
     float rating;
