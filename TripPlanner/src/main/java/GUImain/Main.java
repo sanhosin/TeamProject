@@ -5,15 +5,10 @@ import java.util.Scanner;
 
 import javax.swing.*;
 
-import main.java.mgr.*;
-import main.java.domain.*;
+import main.java.domain.TestDataManage;
 
 public class Main {
-    Manager<PlanReview> planReviewMgr=new Manager<>();
-    Manager<TripLocation> locationMgr=new Manager<>();
-    Manager<TripPlan> planMgr=new Manager<>();
-    Manager<TripReview> tripReviewMgr=new Manager<>();
-    Manager<User> userMgr=new Manager<>();
+    TestDataManage tdm=new TestDataManage();
     
     Scanner scan=new Scanner(System.in);
 

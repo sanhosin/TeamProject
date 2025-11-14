@@ -1,14 +1,12 @@
 package main.java.domain;
 import java.util.Scanner;
 
-import javax.swing.ImageIcon;
-
 import main.java.mgr.Manageable;
 
 public class PlanReview implements Manageable {
     TripPlan targetPlan;
     float rating;
-    ImageIcon photo;
+    String photoPath;
     int travelCost;
     String review;
 
@@ -21,7 +19,7 @@ public class PlanReview implements Manageable {
         
     }
     @Override
-    public void matches(String kwd) {
-        
+    public boolean matches(String kwd) {
+        return false;
     }
 }

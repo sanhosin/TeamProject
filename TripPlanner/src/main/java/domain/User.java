@@ -12,17 +12,22 @@ public class User implements Manageable{
     ArrayList<TripPlan> tripList=new ArrayList<>();
     ArrayList<User> friedsList=new ArrayList<>();
 
-    
     @Override
     public void read(Scanner scan) {
-        
+        id=scan.next();
+        password=scan.next();
+        nickname=scan.next();
     }
+
     @Override
     public void print() {
-        
+        System.out.printf("%s ( %s )\n",nickname,id);
     }
+    
     @Override
-    public void matches(String kwd) {
-        
+    public boolean matches(String kwd) {
+        if(kwd.equals(id))return true;
+        if(kwd.equals(nickname))return true;
+        return false;
     }
 }

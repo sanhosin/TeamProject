@@ -16,5 +16,4 @@ public enum Category {
     public String getMessage(){
         return message;
     }
-
 }
