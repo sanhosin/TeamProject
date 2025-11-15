@@ -5,6 +5,8 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainPane extends JPanel {
 
@@ -28,6 +30,29 @@ public class MainPane extends JPanel {
     private final Color TITLE_COLOR = new Color(40, 60, 90);
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
 
+    private List<ScheduleItem> scheduleList = new ArrayList<>();
+    private JPanel scheduleCardContainer;
+    private JPanel scheduleEmptyMessagePanel;
+    private JPanel scheduleListAreaCard;
+
+    public static class ScheduleItem {
+        String title;
+        String date;
+        String time;
+        String location;
+        String description;
+        Color color;
+
+        public ScheduleItem(String title, String date, String time, String location, String description, Color color) {
+            this.title = title;
+            this.date = date;
+            this.time = time;
+            this.location = location;
+            this.description = description;
+            this.color = color;
+        }
+    }
+
     public MainPane(JPanel root, CardLayout card) {
         this.root = root;
         this.card = card;
@@ -36,6 +61,8 @@ public class MainPane extends JPanel {
 
         mainPanel = setupMainPanel();
         add(mainPanel, BorderLayout.CENTER);
+
+        // 기존에 샘플 데이터를 넣던 부분을 제거했습니다. (초기 리스트는 비어있음)
     }
 
     public JPanel setupMainPanel() {
@@ -59,6 +86,30 @@ public class MainPane extends JPanel {
         panel.add(contentPanel, BorderLayout.CENTER);
 
         return panel;
+    }
+
+    public void addScheduleItem(ScheduleItem item) {
+        scheduleList.add(item);
+        refreshScheduleListUI();
+    }
+
+    private void refreshScheduleListUI() {
+        scheduleCardContainer.removeAll();
+
+        if (scheduleList.isEmpty()) {
+            scheduleCardContainer.add(scheduleEmptyMessagePanel);
+        } else {
+            for (ScheduleItem item : scheduleList) {
+                scheduleCardContainer.add(buildScheduleCard(item));
+                scheduleCardContainer.add(Box.createVerticalStrut(15));
+            }
+            if (scheduleCardContainer.getComponentCount() > 0) {
+                scheduleCardContainer.remove(scheduleCardContainer.getComponentCount() - 1);
+            }
+        }
+
+        scheduleCardContainer.revalidate();
+        scheduleCardContainer.repaint();
     }
 
     private void toggleSidebar() {
@@ -122,6 +173,11 @@ public class MainPane extends JPanel {
         addBtn.setForeground(Color.WHITE);
         addBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         addBtn.setPreferredSize(new Dimension(150, 40));
+
+        addBtn.addActionListener(e -> {
+            card.show(root, "여행지 검색");
+        });
+
 
         panel.add(leftPanel, BorderLayout.WEST);
         panel.add(addBtn, BorderLayout.EAST);
@@ -231,7 +287,7 @@ public class MainPane extends JPanel {
             JLabel dayLabel = new JLabel(days[i], SwingConstants.CENTER);
             dayLabel.setFont(boldFont);
             if (i >= 5) {
-                dayLabel.setForeground(i == 5 ? new Color(100, 100, 255) : new Color(255, 60, 60));//M
+                dayLabel.setForeground(i == 5 ? new Color(255, 100, 100) : new Color(255, 60, 60));
             } else {
                 dayLabel.setForeground(TITLE_COLOR);
             }
@@ -284,9 +340,104 @@ public class MainPane extends JPanel {
         addBtn.setForeground(Color.WHITE);
         addBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
+        addBtn.addActionListener(e -> {
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, this);
+            dialog.setVisible(true);
+        });
+
         top.add(dateTitle, BorderLayout.WEST);
         top.add(addBtn, BorderLayout.EAST);
 
+        scheduleCardContainer = new JPanel();
+        scheduleCardContainer.setLayout(new BoxLayout(scheduleCardContainer, BoxLayout.Y_AXIS));
+        scheduleCardContainer.setOpaque(false);
+        scheduleCardContainer.setBorder(new EmptyBorder(20, 0, 0, 0));
+
+        scheduleEmptyMessagePanel = buildEmptyScheduleMessage();
+
+        JScrollPane scrollPane = new JScrollPane(scheduleCardContainer);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(CARD_COLOR);
+
+        card.add(top, BorderLayout.NORTH);
+        card.add(scrollPane, BorderLayout.CENTER);
+
+        this.scheduleListAreaCard = card;
+
+        refreshScheduleListUI(); // 초기 상태: 비어있는 메시지 표시
+
+        return card;
+    }
+
+    private JPanel buildScheduleCard(ScheduleItem item) {
+        JPanel card = new JPanel(new BorderLayout(10, 0));
+        card.setBackground(CARD_COLOR);
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        card.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        card.setBorder(new CompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
+                new EmptyBorder(15, 15, 15, 15)
+        ));
+
+        JLabel dot = new JLabel("●");
+        dot.setForeground(item.color);
+        dot.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 10));
+
+        JPanel inner = new JPanel();
+        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+        inner.setOpaque(false);
+        inner.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel t = new JLabel(item.title);
+        t.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 17));
+        t.setForeground(TITLE_COLOR);
+        t.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel dt = new JLabel("🕒 " + item.date + " " + item.time + " · " + item.location);
+        dt.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
+        dt.setForeground(new Color(90, 90, 110));
+        dt.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel d = new JLabel("ⓘ " + item.description);
+        d.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
+        d.setForeground(new Color(90, 90, 110));
+        d.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        inner.add(t);
+        inner.add(Box.createVerticalStrut(6));
+        inner.add(dt);
+        inner.add(Box.createVerticalStrut(3));
+        inner.add(d);
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        btnPanel.setOpaque(false);
+
+        JButton editBtn = createIconButton("✏");
+        JButton deleteBtn = createIconButton("❌");
+
+        btnPanel.add(editBtn);
+        btnPanel.add(deleteBtn);
+
+        card.add(dot, BorderLayout.WEST);
+        card.add(inner, BorderLayout.CENTER);
+        card.add(btnPanel, BorderLayout.EAST);
+
+        return card;
+    }
+
+    private JButton createIconButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
+        btn.setFocusPainted(false);
+        btn.setBackground(Color.WHITE);
+        btn.setForeground(new Color(150, 150, 150));
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        return btn;
+    }
+
+    private JPanel buildEmptyScheduleMessage() {
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         center.setOpaque(false);
@@ -312,82 +463,6 @@ public class MainPane extends JPanel {
         center.add(msg1);
         center.add(msg2);
 
-        card.add(top, BorderLayout.NORTH);
-        card.add(center, BorderLayout.CENTER);
-
-        return card;
+        return center;
     }
-}// package main.java.GUImain;
-
-// import javax.swing.*;
-// import javax.swing.border.EmptyBorder;
-// import java.awt.BorderLayout;
-// import java.awt.CardLayout;
-// import java.awt.FlowLayout;
-// import java.awt.GridLayout;
-
-// public class MainPane extends JPanel {
-//     JPanel root;
-//     CardLayout card;
-    
-//     JPanel mainPanel;
-//     JPanel mainHeaderPanel;
-//     JPanel mainCenterPanel;
-
-//     public MainPane(JPanel root, CardLayout card) {
-//         this.root = root;
-//         this.card = card;
-//     }
-//     public JPanel setupMainPanel() {
-//         mainPanel = new JPanel(new BorderLayout());
-//         mainPanel.setOpaque(false);
-
-//         mainHeaderPanel = buildMainHeader();
-//         mainCenterPanel = buildMainCenter();
-//         mainCenterPanel.setOpaque(false);
-
-//         mainPanel.add(mainHeaderPanel, BorderLayout.NORTH);
-//         mainPanel.add(mainCenterPanel, BorderLayout.CENTER);
-
-//         return mainPanel;
-//     }
-//     JPanel buildMainHeader() {
-//         JPanel panel = new JPanel(new BorderLayout());
-
-//         JPanel left = new JPanel(new FlowLayout());
-//         JButton menu = new JButton("MENU");
-//         left.add(menu);
-
-//         JPanel center = new JPanel(new FlowLayout());
-//         JLabel title = new JLabel("여행가요");
-//         center.add(title);
-
-//         JPanel right = new JPanel(new FlowLayout());
-//         JTextField searchField = new JTextField(20);
-//         right.add(searchField);
-
-//         panel.add(left, BorderLayout.WEST);
-//         panel.add(center, BorderLayout.CENTER);
-//         panel.add(right, BorderLayout.EAST);
-
-//         return panel;
-//     }
-
-//     JPanel buildMainCenter() {
-//         JPanel panel = new JPanel(new GridLayout(2, 1, 10, 20));
-//         panel.setOpaque(false);
-//         panel.setBorder(new EmptyBorder(10, 100, 20, 100));
-
-//         JPanel forCalendar = new JPanel();
-//         forCalendar.add(new JLabel("달력 추가 공간")); // 수정
-
-//         JPanel forSchedules = new JPanel();
-//         forSchedules.add(new JLabel("일정리스트 표시 공간")); // 수정
-
-//         panel.add(forCalendar);
-//         panel.add(forSchedules);
-
-//         return panel;
-//     }
-
-// }
+}
