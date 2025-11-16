@@ -24,6 +24,10 @@ public class Main {
     JPanel schedulePanel;
 
     void mymain(){
+        tdm.readAllLocation("TripPlanner/src/tripLocation.txt");
+        tdm.printAllLocation();
+        tdm.readAllUser("TripPlanner/src/user.txt");
+        tdm.printAllUser();
         createAndShowGUI();
     }
 
