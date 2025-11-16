@@ -2,13 +2,12 @@ package main.java.GUImain;
 
 import java.awt.*;
 import java.util.Scanner;
-
 import javax.swing.*;
-
-import main.java.mgr.*;
 import main.java.domain.*;
+import main.java.mgr.*;
 
 public class Main {
+    TestDataManage tdm=new TestDataManage();
     Manager<PlanReview> planReviewMgr=new Manager<>();
     Manager<TripLocation> locationMgr=new Manager<>();
     Manager<TripPlan> planMgr=new Manager<>();
@@ -26,6 +25,7 @@ public class Main {
     // MainPane과 TravelSearchPane은 순서가 중요합니다.
     MainPane mainPanel; // 일정 관리 화면 (MainPane)
     TravelSearchPane travelSearchPanel; // 여행지 검색 화면 (새로 추가)
+    JPanel searchPanel, schedulePanel;
 
     void mymain(){
         // 1. MainPane을 먼저 인스턴스화합니다.
@@ -33,6 +33,10 @@ public class Main {
         // 2. TravelSearchPane을 인스턴스화할 때, mainPanel의 참조를 넘겨줍니다.
         travelSearchPanel = new TravelSearchPane(root, card, mainPanel);
 
+        tdm.readAllLocation("TripPlanner/src/tripLocation.txt");
+        tdm.printAllLocation();
+        tdm.readAllUser("TripPlanner/src/user.txt");
+        tdm.printAllUser();
         createAndShowGUI();
     }
 
