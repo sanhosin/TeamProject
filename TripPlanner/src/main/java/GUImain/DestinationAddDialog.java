@@ -3,7 +3,7 @@ package main.java.GUImain;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter; // 👈 이 import가 추가되었습니다.
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
@@ -29,7 +29,7 @@ public class DestinationAddDialog extends JDialog {
         this.travelSearchPane = parentPane;
 
         setTitle("새로운 여행지 추가");
-        setSize(400, 550);
+        setSize(400, 550); // JDialog는 팝업 윈도우(대화상자)를 나타냄
         setResizable(false);
         setLocationRelativeTo(owner);
         setUndecorated(true);
@@ -61,6 +61,8 @@ public class DestinationAddDialog extends JDialog {
         JLabel closeBtn = new JLabel("❌");
         closeBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 18));
         closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // MouseListener를 무명 클래스로 구현
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -79,11 +81,11 @@ public class DestinationAddDialog extends JDialog {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
 
-        contentPanel.add(createFormField("여행지 이름:", nameField = new JTextField()));
+        contentPanel.add(createFormField("여행지 이름:", nameField = new JTextField())); // JTextField는 텍스트 입력 컴포넌트
         contentPanel.add(Box.createVerticalStrut(15));
         contentPanel.add(createFormField("국가:", countryField = new JTextField()));
         contentPanel.add(Box.createVerticalStrut(15));
-        contentPanel.add(createFormTextArea("설명:", descriptionArea = new JTextArea(3, 20)));
+        contentPanel.add(createFormTextArea("설명:", descriptionArea = new JTextArea(3, 20))); // JTextArea
         contentPanel.add(Box.createVerticalStrut(15));
         contentPanel.add(createFormField("평점 (예: 4.5):", ratingField = new JTextField()));
         contentPanel.add(Box.createVerticalStrut(15));
@@ -147,8 +149,9 @@ public class DestinationAddDialog extends JDialog {
         addBtn.setFocusPainted(false);
         addBtn.setBackground(MAIN_BLUE);
         addBtn.setForeground(Color.WHITE);
-        addBtn.setPreferredSize(new Dimension(340, 45));
+        addBtn.setPreferredSize(new Dimension(340, 45)); // JButton
 
+        // ActionListener를 무명 클래스로 구현
         addBtn.addActionListener(e -> {
             String name = nameField.getText();
             String country = countryField.getText();
@@ -163,6 +166,7 @@ public class DestinationAddDialog extends JDialog {
 
             double rating;
             try {
+                // String을 double로 변환: 래퍼 클래스 Double의 정적 메서드 사용
                 rating = Double.parseDouble(ratingStr);
                 if (rating < 0 || rating > 5) {
                     throw new NumberFormatException();
@@ -172,8 +176,9 @@ public class DestinationAddDialog extends JDialog {
                 return;
             }
 
+            // 태그 문자열 처리 (split, trim)
             String[] tags = tagsStr.isEmpty() ? new String[]{} : Arrays.stream(tagsStr.split(","))
-                    .map(String::trim)
+                    .map(String::trim) // String trim()
                     .filter(s -> !s.isEmpty())
                     .toArray(String[]::new);
 

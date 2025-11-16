@@ -5,6 +5,8 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +63,6 @@ public class MainPane extends JPanel {
 
         mainPanel = setupMainPanel();
         add(mainPanel, BorderLayout.CENTER);
-
-        // 기존에 샘플 데이터를 넣던 부분을 제거했습니다. (초기 리스트는 비어있음)
     }
 
     public JPanel setupMainPanel() {
@@ -117,21 +117,22 @@ public class MainPane extends JPanel {
         final int endWidth = isSidebarVisible ? 0 : SLIDE_WIDTH;
         final int delta = (endWidth - startWidth) / ANIMATION_STEPS;
 
-        Timer timer = new Timer(ANIMATION_DELAY_MS, null);
+        Timer timer = new Timer(ANIMATION_DELAY_MS, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int currentWidth = sidebar.getPreferredSize().width;
+                int newWidth = currentWidth + delta;
 
-        timer.addActionListener(e -> {
-            int currentWidth = sidebar.getPreferredSize().width;
-            int newWidth = currentWidth + delta;
+                if ((delta > 0 && newWidth >= endWidth) || (delta < 0 && newWidth <= endWidth)) {
+                    newWidth = endWidth;
+                    ((Timer)e.getSource()).stop();
+                    isSidebarVisible = !isSidebarVisible;
+                }
 
-            if ((delta > 0 && newWidth >= endWidth) || (delta < 0 && newWidth <= endWidth)) {
-                newWidth = endWidth;
-                ((Timer)e.getSource()).stop();
-                isSidebarVisible = !isSidebarVisible;
+                sidebar.setPreferredSize(new Dimension(newWidth, sidebar.getHeight()));
+                sidebar.revalidate();
+                mainPanel.repaint();
             }
-
-            sidebar.setPreferredSize(new Dimension(newWidth, sidebar.getHeight()));
-            sidebar.revalidate();
-            mainPanel.repaint();
         });
 
         if (timer.isRunning()) {
@@ -174,8 +175,11 @@ public class MainPane extends JPanel {
         addBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         addBtn.setPreferredSize(new Dimension(150, 40));
 
-        addBtn.addActionListener(e -> {
-            card.show(root, "여행지 검색");
+        addBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                card.show(root, "여행지 검색");
+            }
         });
 
 
@@ -279,7 +283,7 @@ public class MainPane extends JPanel {
         topHeader.add(yearLabel);
         topHeader.add(monthNav);
 
-        JPanel calendarGrid = new JPanel(new GridLayout(7, 7, 5, 10));
+        JPanel calendarGrid = new JPanel(new GridLayout(7, 7, 5, 10)); // GridLayout 사용
         calendarGrid.setOpaque(false);
 
         String[] days = {"월", "화", "수", "목", "금", "토", "일"};
@@ -340,10 +344,13 @@ public class MainPane extends JPanel {
         addBtn.setForeground(Color.WHITE);
         addBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
 
-        addBtn.addActionListener(e -> {
-            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, this);
-            dialog.setVisible(true);
+        addBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(MainPane.this);
+                ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, MainPane.this);
+                dialog.setVisible(true);
+            }
         });
 
         top.add(dateTitle, BorderLayout.WEST);
@@ -365,7 +372,7 @@ public class MainPane extends JPanel {
 
         this.scheduleListAreaCard = card;
 
-        refreshScheduleListUI(); // 초기 상태: 비어있는 메시지 표시
+        refreshScheduleListUI();
 
         return card;
     }
@@ -377,7 +384,7 @@ public class MainPane extends JPanel {
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         card.setBorder(new CompoundBorder(
-                BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
+                new LineBorder(BORDER_COLOR, 1, true),
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
