@@ -13,7 +13,7 @@ public class DestinationAddDialog extends JDialog {
     private final Color MAIN_BLUE = new Color(90, 80, 255);
     private final Color LIGHT_GRAY = new Color(220, 220, 220);
     private final Color TITLE_COLOR = new Color(40, 60, 90);
-    private final Color BLUE_ACCENT = new Color(80, 140, 255);
+    //private final Color BLUE_ACCENT = new Color(80, 140, 255);  미사용이라 주석처리했어요
 
     private JTextField nameField;
     private JTextField countryField;

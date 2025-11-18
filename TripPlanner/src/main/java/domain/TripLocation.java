@@ -4,20 +4,41 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import main.java.enums.*;
+import main.java.facade.UIData;
 import main.java.mgr.Manageable;
 
-public class TripLocation implements Manageable {
+public class TripLocation implements Manageable,UIData {
     // 국가명, 지역명, 카테고리, 맛집정보, 여행지후기, 대표 관광지/행사정보, 여행지 날씨, 설명, 사진
     String country;
-    String region;
+    String region; //key
     ArrayList<CategoryRef> categoryList = new ArrayList<>();
     ArrayList<Restaurant> restaurantList = new ArrayList<>();
     ArrayList<TripReview> reviewList = new ArrayList<>();
-    ArrayList<Attraction> attractionList = new ArrayList<>();
     ArrayList<Festival> festivalList = new ArrayList<>();
     String weather;
     String description;
     ArrayList<String> photoPathList = new ArrayList<>();
+
+    public static final int LOC_COUNTY=0;
+    public static final int LOC_REGION=1;
+    public static final int LOC_CATEGORIES=2;
+    public static final int LOC_RESTAURANTS=3;
+    public static final int LOC_REVIEWS=4;
+    public static final int LOC_FESTIVALS=5;
+    public static final int LOC_WEATHER=6;
+    public static final int LOC_DESCRIPTION=7;
+    public static final int LOC_PHOTO=8;
+
+    @Override
+    public void set(Object[] uidata) {
+        
+    }
+
+    @Override
+    public Object[] getUidata() {
+        Object[] uidata={country,region,categoryList,restaurantList,reviewList,festivalList,weather,description,photoPathList};
+        return uidata;
+    }
 
     @Override
     public void read(Scanner scan) {
@@ -72,10 +93,15 @@ public class TripLocation implements Manageable {
     }
 
     @Override
+    public String toString(){
+        return region;
+    }
+
+    @Override
     public boolean matches(String kwd) {
-        if (kwd.equals(country))
+        if (country.equals(kwd))
             return true;
-        if (kwd.equals(region))
+        if (region.equals(kwd))
             return true;
         for (CategoryRef c : categoryList) {
             if (c.equals(kwd))
@@ -88,16 +114,6 @@ public class TripLocation implements Manageable {
         // 식당명, 위치, 평점, 대표 메뉴, 사진
         void read(Scanner scan) {
             super.read(scan);
-        }
-    }
-
-    class Attraction extends TripLocationDetails {
-        // 관광지, 위치, 평점, 비용, 설명, 사진
-        int cost;
-
-        void read(Scanner scan) {
-            super.read(scan);
-            cost = scan.nextInt();
         }
     }
 

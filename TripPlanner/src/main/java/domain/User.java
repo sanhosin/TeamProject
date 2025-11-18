@@ -9,7 +9,7 @@ public class User implements Manageable{
     String id;
     String password;
     String nickname;
-    ArrayList<TripPlan> tripList=new ArrayList<>();
+    ArrayList<TripPlan> planList=new ArrayList<>();
     ArrayList<User> friedsList=new ArrayList<>();
 
     @Override
@@ -26,8 +26,25 @@ public class User implements Manageable{
     
     @Override
     public boolean matches(String kwd) {
-        if(kwd.equals(id))return true;
-        if(kwd.equals(nickname))return true;
+        if(id.equals(kwd))return true;
+        if(nickname.equals(kwd))return true;
         return false;
     }
+
+    public boolean isCorrect(String id,String pwd){
+        return (this.id.equals(id)&&this.password.equals(pwd));
+    }
+
+    public void addPlan(TripPlan newPlan){
+        planList.add(newPlan);
+    }
+
+    public ArrayList<TripPlan> getPlanList(){
+        return planList;
+    }
+
+    public void removePlan(TripPlan tp){
+        planList.remove(tp);
+    }
+
 }

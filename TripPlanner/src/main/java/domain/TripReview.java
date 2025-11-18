@@ -10,7 +10,7 @@ public class TripReview implements Manageable{
     float rating; // min:0 , max:5
     String photoPath;
     int travelCost;
-    String review;
+    String review; 
     
     @Override
     public void read(Scanner scan) {

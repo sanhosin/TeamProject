@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
+import main.java.domain.User;
+
 public class LoginPane extends JPanel {
     JPanel root;
     CardLayout card;
@@ -79,7 +81,15 @@ public class LoginPane extends JPanel {
         loginBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 15));
 
         loginBtn.addActionListener(e -> {
-            card.show(root, "메인");
+            String id=idField.getText();
+            String pwd=new String(pwField.getPassword());
+            User loginedUser=Main.tdm.isExistUser(id,pwd);
+            if(loginedUser==null){
+                //여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
+            }
+            else{
+                card.show(root, "메인");
+            }
         });
 
         JButton joinBtn = new JButton("회원가입");
@@ -151,7 +161,6 @@ public class LoginPane extends JPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
-            char echoChar = getEchoChar();
             if (getPassword().length == 0 && !(FocusManager.getCurrentManager().getFocusOwner() == this)) {
                 setEchoChar((char) 0);
             }
@@ -166,7 +175,7 @@ public class LoginPane extends JPanel {
                 g2.dispose();
             }
 
-            setEchoChar(echoChar);
+            setEchoChar('*');
         }
     }
 }

@@ -4,9 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Manager<T extends Manageable> {
-    ArrayList<T> mList=new ArrayList<>();
+    public ArrayList<T> mList=new ArrayList<>();
 
     public void readAll(String filename, Factory<T> fac){
         Scanner filein=openFile(filename);
@@ -25,6 +26,20 @@ public class Manager<T extends Manageable> {
         }
     }
 
+    public T find(String kwd){
+        for(T m:mList){
+            if(m.matches(kwd))return m;
+        }
+        return null;
+    }
+
+    public List<T> findAll(String kwd){
+        List<T> result=new ArrayList<>();
+        for(T m:mList){
+            if(m.matches(kwd))result.add(m);
+        }
+        return result;
+    }
     public void search(Scanner keyScanner){
         String kwd=null;
         while(true){

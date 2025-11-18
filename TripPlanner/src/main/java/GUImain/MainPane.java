@@ -2,16 +2,17 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import main.java.domain.TestDataManage;
+import main.java.domain.TripPlan;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainPane extends JPanel {
-
     JPanel root;
     CardLayout card;
 
@@ -32,7 +33,6 @@ public class MainPane extends JPanel {
     private final Color TITLE_COLOR = new Color(40, 60, 90);
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
 
-    private List<ScheduleItem> scheduleList = new ArrayList<>();
     private JPanel scheduleCardContainer;
     private JPanel scheduleEmptyMessagePanel;
     private JPanel scheduleListAreaCard;
@@ -88,19 +88,18 @@ public class MainPane extends JPanel {
         return panel;
     }
 
-    public void addScheduleItem(ScheduleItem item) {
-        scheduleList.add(item);
+    public void addScheduleItem() {
         refreshScheduleListUI();
     }
 
     private void refreshScheduleListUI() {
         scheduleCardContainer.removeAll();
 
-        if (scheduleList.isEmpty()) {
+        if (Main.tdm.getPlanList().isEmpty()) {
             scheduleCardContainer.add(scheduleEmptyMessagePanel);
         } else {
-            for (ScheduleItem item : scheduleList) {
-                scheduleCardContainer.add(buildScheduleCard(item));
+            for (TripPlan tp : Main.tdm.getPlanList()) {
+                scheduleCardContainer.add(buildScheduleCard(tp));
                 scheduleCardContainer.add(Box.createVerticalStrut(15));
             }
             if (scheduleCardContainer.getComponentCount() > 0) {
@@ -125,7 +124,7 @@ public class MainPane extends JPanel {
 
                 if ((delta > 0 && newWidth >= endWidth) || (delta < 0 && newWidth <= endWidth)) {
                     newWidth = endWidth;
-                    ((Timer)e.getSource()).stop();
+                    ((Timer) e.getSource()).stop();
                     isSidebarVisible = !isSidebarVisible;
                 }
 
@@ -140,7 +139,6 @@ public class MainPane extends JPanel {
         }
         timer.start();
     }
-
 
     private JPanel buildHeader() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -181,7 +179,6 @@ public class MainPane extends JPanel {
                 card.show(root, "여행지 검색");
             }
         });
-
 
         panel.add(leftPanel, BorderLayout.WEST);
         panel.add(addBtn, BorderLayout.EAST);
@@ -255,8 +252,7 @@ public class MainPane extends JPanel {
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(20, 30, 20, 30)
-        ));
+                new EmptyBorder(20, 30, 20, 30)));
 
         Font boldFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 15);
         Font plainFont = new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14);
@@ -286,7 +282,7 @@ public class MainPane extends JPanel {
         JPanel calendarGrid = new JPanel(new GridLayout(7, 7, 5, 10)); // GridLayout 사용
         calendarGrid.setOpaque(false);
 
-        String[] days = {"월", "화", "수", "목", "금", "토", "일"};
+        String[] days = { "월", "화", "수", "목", "금", "토", "일" };
         for (int i = 0; i < 7; i++) {
             JLabel dayLabel = new JLabel(days[i], SwingConstants.CENTER);
             dayLabel.setFont(boldFont);
@@ -327,8 +323,7 @@ public class MainPane extends JPanel {
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(20, 30, 20, 30)
-        ));
+                new EmptyBorder(20, 30, 20, 30)));
 
         JPanel top = new JPanel(new BorderLayout());
         top.setOpaque(false);
@@ -377,7 +372,8 @@ public class MainPane extends JPanel {
         return card;
     }
 
-    private JPanel buildScheduleCard(ScheduleItem item) {
+    private JPanel buildScheduleCard(TripPlan tp) {// tdm으로 수정 , TripPlan을 인수로 받기
+        Object[] uidata = tp.getUidata();
         JPanel card = new JPanel(new BorderLayout(10, 0));
         card.setBackground(CARD_COLOR);
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
@@ -385,11 +381,10 @@ public class MainPane extends JPanel {
 
         card.setBorder(new CompoundBorder(
                 new LineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(15, 15, 15, 15)
-        ));
+                new EmptyBorder(15, 15, 15, 15)));
 
         JLabel dot = new JLabel("●");
-        dot.setForeground(item.color);
+        dot.setForeground((Color) uidata[TripPlan.PLAN_COLOR]);
         dot.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 10));
 
         JPanel inner = new JPanel();
@@ -397,17 +392,18 @@ public class MainPane extends JPanel {
         inner.setOpaque(false);
         inner.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel t = new JLabel(item.title);
+        JLabel t = new JLabel((String) uidata[TripPlan.PLAN_TITLE]);
         t.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 17));
         t.setForeground(TITLE_COLOR);
         t.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel dt = new JLabel("🕒 " + item.date + " " + item.time + " · " + item.location);
+        JLabel dt = new JLabel("🕒 " + uidata[TripPlan.PLAN_DATE] + " " + uidata[TripPlan.PLAN_TIME]
+                + " · " + uidata[TripPlan.PLAN_LOC]);
         dt.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         dt.setForeground(new Color(90, 90, 110));
         dt.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel d = new JLabel("ⓘ " + item.description);
+        JLabel d = new JLabel("ⓘ " + uidata[TripPlan.PLAN_REVIEW]);
         d.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         d.setForeground(new Color(90, 90, 110));
         d.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -422,7 +418,25 @@ public class MainPane extends JPanel {
         btnPanel.setOpaque(false);
 
         JButton editBtn = createIconButton("✏");
+        editBtn.addActionListener(e -> {
+            TestDataManage.loginedUser.removePlan(tp);
+            
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(MainPane.this);
+            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, MainPane.this);
+            dialog.preFillScheduleData(
+                (String) uidata[TripPlan.PLAN_TITLE],
+                uidata[TripPlan.PLAN_LOC].toString(),
+                (String) uidata[TripPlan.PLAN_REVIEW],
+                (String) uidata[TripPlan.PLAN_DATE],
+                (String) uidata[TripPlan.PLAN_TIME]);
+            dialog.setVisible(true);
+        });
+
         JButton deleteBtn = createIconButton("❌");
+        deleteBtn.addActionListener(e -> {
+            TestDataManage.loginedUser.removePlan(tp);
+            refreshScheduleListUI();
+        });
 
         btnPanel.add(editBtn);
         btnPanel.add(deleteBtn);

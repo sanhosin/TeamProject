@@ -2,6 +2,8 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,12 +48,12 @@ public class ScheduleAddDialog extends JDialog {
         setContentPane(buildPanel());
     }
 
-    public void preFillScheduleData(String title, String location, String description) {
+    public void preFillScheduleData(String title, String location, String description,String date,String time) {
         if (titleField != null) titleField.setText(title);
         if (locationField != null) locationField.setText(location);
         if (descriptionField != null) descriptionField.setText(description);
-        if (dateField != null) dateField.setText("2025년 11월 15일");
-        if (timeField != null) timeField.setText("오전 10:00");
+        if (dateField != null) dateField.setText(date);
+        if (timeField != null) timeField.setText(time);
     }
 
     private JPanel buildPanel() {
@@ -72,7 +74,7 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.add(buildDateTimeRow());
         mainPanel.add(Box.createVerticalStrut(20));
 
-        locationField = buildInputField("파리 프랑스", 40);
+        locationField = buildInputField("파리", 40);
         mainPanel.add(buildLabel("장소"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(locationField);
@@ -230,10 +232,12 @@ public class ScheduleAddDialog extends JDialog {
             String location = locationField.getText();
             String description = descriptionField.getText();
 
-            MainPane.ScheduleItem newItem = new MainPane.ScheduleItem(title, date, time, location, description, selectedColor);
+            Object[] uiData={title,date,time,location,description,selectedColor};
+            Main.tdm.addPlan(uiData);
 
+            
             if (mainPane != null) {
-                mainPane.addScheduleItem(newItem);
+                mainPane.addScheduleItem();
             }
 
             dispose();

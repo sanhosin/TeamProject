@@ -4,15 +4,9 @@ import java.awt.*;
 import java.util.Scanner;
 import javax.swing.*;
 import main.java.domain.*;
-import main.java.mgr.*;
 
 public class Main {
-    TestDataManage tdm=new TestDataManage();
-    Manager<PlanReview> planReviewMgr=new Manager<>();
-    Manager<TripLocation> locationMgr=new Manager<>();
-    Manager<TripPlan> planMgr=new Manager<>();
-    Manager<TripReview> tripReviewMgr=new Manager<>();
-    Manager<User> userMgr=new Manager<>();
+    public static TestDataManage tdm=new TestDataManage();
 
     Scanner scan=new Scanner(System.in);
 
@@ -33,9 +27,7 @@ public class Main {
         // 2. TravelSearchPane을 인스턴스화할 때, mainPanel의 참조를 넘겨줍니다.
         travelSearchPanel = new TravelSearchPane(root, card, mainPanel);
 
-        tdm.readAllLocation("TripPlanner/src/tripLocation.txt");
         tdm.printAllLocation();
-        tdm.readAllUser("TripPlanner/src/user.txt");
         tdm.printAllUser();
         createAndShowGUI();
     }

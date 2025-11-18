@@ -2,6 +2,7 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,7 +28,6 @@ public class DestinationDetailDialog extends JDialog {
         CUSTOM_FONT_NAME = fontName;
         this.parentPane = parentPane;
         this.destination = destination;
-
         setTitle(destination.name + ", " + destination.country);
         setSize(450, 700);
         setResizable(false);
@@ -254,7 +254,7 @@ public class DestinationDetailDialog extends JDialog {
 
             ScheduleAddDialog dialog = new ScheduleAddDialog(mainFrame, CUSTOM_FONT_NAME, mainPane);
 
-            dialog.preFillScheduleData(destination.name, destination.country, destination.description);
+            dialog.preFillScheduleData(destination.name, destination.country, destination.description,"","");
 
             dispose();
             dialog.setVisible(true);
