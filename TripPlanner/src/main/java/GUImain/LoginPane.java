@@ -45,8 +45,7 @@ public class LoginPane extends JPanel {
 
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
-                BorderFactory.createEmptyBorder(40, 40, 40, 40)
-        ));
+                BorderFactory.createEmptyBorder(40, 40, 40, 40)));
 
         JLabel icon = new JLabel("✈", SwingConstants.CENTER);
         icon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 40));
@@ -81,13 +80,12 @@ public class LoginPane extends JPanel {
         loginBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 15));
 
         loginBtn.addActionListener(e -> {
-            String id=idField.getText();
-            String pwd=new String(pwField.getPassword());
-            User loginedUser=Main.tdm.isExistUser(id,pwd);
-            if(loginedUser==null){
-                //여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
-            }
-            else{
+            String id = idField.getText();
+            String pwd = new String(pwField.getPassword());
+            User loginedUser = Main.tdm.isExistUser(id, pwd);
+            if (loginedUser == null) {
+                // 여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
+            } else {
                 card.show(root, "메인");
             }
         });
@@ -123,8 +121,7 @@ public class LoginPane extends JPanel {
         field.setMaximumSize(new Dimension(310, 40));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         field.setBackground(new Color(245, 245, 245));
         field.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
     }
