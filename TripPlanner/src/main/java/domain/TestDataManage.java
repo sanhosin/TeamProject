@@ -11,7 +11,7 @@ public class TestDataManage {
     public static Manager<TripLocation> locMgr=new Manager<>();
     public static Manager<User> userMgr=new Manager<>();
 
-    public TestDataManage(){
+    public TestDataManage() {
         readAllLocation("tripLocation.txt");
         readAllUser("user.txt");
     }

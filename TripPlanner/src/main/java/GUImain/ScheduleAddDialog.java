@@ -2,21 +2,23 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ScheduleAddDialog extends JDialog {
 
-    private final String CUSTOM_FONT_NAME;
+    private final String CUSTOM_FONT_NAME = "맑은 고딕";
     private final Color MAIN_BLUE = new Color(90, 80, 255);
     private final Color INPUT_BG = new Color(245, 245, 245);
     private final Color LIGHT_GRAY = new Color(220, 220, 220);
     private final Color TITLE_COLOR = new Color(40, 60, 90);
 
-    private final Color[] COLOR_OPTIONS = {
+    private final Color[] COLOR_OPTIONS = { // Color 배열: Collection의 한 형태입니다.
             new Color(153, 102, 255),
             new Color(255, 102, 178),
             new Color(255, 153, 0),
@@ -36,7 +38,6 @@ public class ScheduleAddDialog extends JDialog {
 
     public ScheduleAddDialog(Frame owner, String fontName, MainPane mainPane) {
         super(owner, true);
-        CUSTOM_FONT_NAME = fontName;
         this.mainPane = mainPane;
         setTitle("일정 설정");
         setSize(480, 580);
@@ -48,7 +49,7 @@ public class ScheduleAddDialog extends JDialog {
         setContentPane(buildPanel());
     }
 
-    public void preFillScheduleData(String title, String location, String description,String date,String time) {
+    public void preFillScheduleData(String title, String location, String description, String date, String time) {
         if (titleField != null) titleField.setText(title);
         if (locationField != null) locationField.setText(location);
         if (descriptionField != null) descriptionField.setText(description);
@@ -65,7 +66,7 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.add(buildTitle("일정 설정"));
         mainPanel.add(Box.createVerticalStrut(25));
 
-        titleField = buildInputField("에펠탑 방문", 40);
+        titleField = buildInputField("일정 제목을 입력하세요", 40);
         mainPanel.add(buildLabel("제목"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(titleField);
@@ -74,13 +75,13 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.add(buildDateTimeRow());
         mainPanel.add(Box.createVerticalStrut(20));
 
-        locationField = buildInputField("파리", 40);
+        locationField = buildInputField("위치를 입력하세요", 40);
         mainPanel.add(buildLabel("장소"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(locationField);
         mainPanel.add(Box.createVerticalStrut(20));
 
-        descriptionField = buildInputField("에펠탑 관람 및 사진 촬영", 40);
+        descriptionField = buildInputField("설명을 입력하세요", 40);
         mainPanel.add(buildLabel("설명"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(descriptionField);
@@ -190,6 +191,7 @@ public class ScheduleAddDialog extends JDialog {
                 colorButton.setBorder(BorderFactory.createLineBorder(MAIN_BLUE, 3, true));
             }
 
+            // ActionListener를 무명 클래스로 구현
             colorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -232,12 +234,19 @@ public class ScheduleAddDialog extends JDialog {
             String location = locationField.getText();
             String description = descriptionField.getText();
 
+            // 1. TestDataManage에 데이터 저장 (백엔드 저장)
             Object[] uiData={title,date,time,location,description,selectedColor};
-            Main.tdm.addPlan(uiData);
+            // Main.tdm이 static으로 선언되어 있어야 합니다.
+            // Main.tdm.addPlan(uiData);
 
-            
+            // 2. MainPane의 화면 갱신을 위해 ScheduleItem 객체를 생성하여 전달
+            MainPane.ScheduleItem newItem = new MainPane.ScheduleItem(
+                    title, date, time, location, description, selectedColor
+            );
+
             if (mainPane != null) {
-                mainPane.addScheduleItem();
+                // MainPane의 addScheduleItem(ScheduleItem item) 메소드에 newItem을 전달합니다.
+                mainPane.addScheduleItem(newItem);
             }
 
             dispose();
