@@ -11,15 +11,14 @@ public class Manager<T extends Manageable> {
 
     public void readAll(String filename, Factory<T> fac){
         Scanner filein = null;
-        try
-        {
-            filein = openFile("src/"+filename);
-        }
-        catch(Exception e)
+        filein = openFile("src/"+filename);
+        if(filein == null)
         {
             filein = openFile("TripPlanner/src/"+filename);
-            if(filein == null)
-                filein = openFile("TeamProject/TripPlanner/src/"+filename);
+        }
+        if(filein == null)
+        {
+            filein = openFile("TeamProject/TripPlanner/src/"+filename);
         }
         T m=null;
         while(filein.hasNext()){
