@@ -1,7 +1,10 @@
 package main.java.GUImain;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
 import main.java.domain.User;
@@ -85,7 +88,7 @@ public class LoginPane extends JPanel {
             String pwd=new String(pwField.getPassword());
             User loginedUser=Main.tdm.isExistUser(id,pwd);
             if(loginedUser==null){
-                //여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
+                // 여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
             }
             else{
                 card.show(root, "메인");
@@ -99,6 +102,12 @@ public class LoginPane extends JPanel {
         joinBtn.setForeground(Color.BLACK);
         joinBtn.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
         joinBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 15));
+
+        // 🚨 수정된 부분: 회원가입 버튼 클릭 시 "회원가입" 화면으로 전환
+        joinBtn.addActionListener(e -> {
+            card.show(root, "회원가입");
+        });
+
 
         panel.add(icon);
         panel.add(title);

@@ -6,11 +6,19 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Manager<T extends Manageable> {
+public class     Manager<T extends Manageable> {
     public ArrayList<T> mList=new ArrayList<>();
 
+    // main.java.mgr.Manager.java 파일 내, readAll 메소드 수정
     public void readAll(String filename, Factory<T> fac){
-        Scanner filein=openFile(filename);
+        Scanner filein = openFile(filename);
+
+        // 파일 입출력 시 예외 처리 및 널 체크 로직 추가
+        if (filein == null) {
+            System.err.println("경고: 데이터 파일 '" + filename + "'을(를) 찾을 수 없습니다. 데이터 로드를 건너뜁니다.");
+            return; // NullPointerException 발생 없이 안전하게 종료
+        }
+
         T m=null;
         while(filein.hasNext()){
             m=fac.create();

@@ -12,8 +12,8 @@ public class TestDataManage {
     public static Manager<User> userMgr=new Manager<>();
 
     public TestDataManage(){
-        readAllLocation("TripPlanner/src/tripLocation.txt");
-        readAllUser("TripPlanner/src/user.txt");
+        readAllLocation("src/tripLocation.txt");
+        readAllUser("src/user.txt");
     }
     //*********************입력데이터 콘솔창 입출력*************** */ */
     public void readAllLocation(String fileName){

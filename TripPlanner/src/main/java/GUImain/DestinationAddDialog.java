@@ -5,15 +5,21 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+
+// DestinationItem은 독립된 클래스로 가정합니다.
+import main.java.GUImain.DestinationItem;
 
 public class DestinationAddDialog extends JDialog {
 
-    private final String CUSTOM_FONT_NAME;
+    private final String CUSTOM_FONT_NAME = "맑은 고딕";
     private final Color MAIN_BLUE = new Color(90, 80, 255);
     private final Color LIGHT_GRAY = new Color(220, 220, 220);
     private final Color TITLE_COLOR = new Color(40, 60, 90);
-    //private final Color BLUE_ACCENT = new Color(80, 140, 255);  미사용이라 주석처리했어요
 
     private JTextField nameField;
     private JTextField countryField;
@@ -25,11 +31,10 @@ public class DestinationAddDialog extends JDialog {
 
     public DestinationAddDialog(Frame owner, String fontName, TravelSearchPane parentPane) {
         super(owner, true);
-        CUSTOM_FONT_NAME = fontName;
         this.travelSearchPane = parentPane;
 
         setTitle("새로운 여행지 추가");
-        setSize(400, 550); // JDialog는 팝업 윈도우(대화상자)를 나타냄
+        setSize(400, 550);
         setResizable(false);
         setLocationRelativeTo(owner);
         setUndecorated(true);
@@ -62,7 +67,6 @@ public class DestinationAddDialog extends JDialog {
         closeBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 18));
         closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // MouseListener를 무명 클래스로 구현
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -81,11 +85,11 @@ public class DestinationAddDialog extends JDialog {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
 
-        contentPanel.add(createFormField("여행지 이름:", nameField = new JTextField())); // JTextField는 텍스트 입력 컴포넌트
+        contentPanel.add(createFormField("여행지 이름:", nameField = new JTextField()));
         contentPanel.add(Box.createVerticalStrut(15));
         contentPanel.add(createFormField("국가:", countryField = new JTextField()));
         contentPanel.add(Box.createVerticalStrut(15));
-        contentPanel.add(createFormTextArea("설명:", descriptionArea = new JTextArea(3, 20))); // JTextArea
+        contentPanel.add(createFormTextArea("설명:", descriptionArea = new JTextArea(3, 20)));
         contentPanel.add(Box.createVerticalStrut(15));
         contentPanel.add(createFormField("평점 (예: 4.5):", ratingField = new JTextField()));
         contentPanel.add(Box.createVerticalStrut(15));
@@ -149,9 +153,8 @@ public class DestinationAddDialog extends JDialog {
         addBtn.setFocusPainted(false);
         addBtn.setBackground(MAIN_BLUE);
         addBtn.setForeground(Color.WHITE);
-        addBtn.setPreferredSize(new Dimension(340, 45)); // JButton
+        addBtn.setPreferredSize(new Dimension(340, 45));
 
-        // ActionListener를 무명 클래스로 구현
         addBtn.addActionListener(e -> {
             String name = nameField.getText();
             String country = countryField.getText();
@@ -166,7 +169,6 @@ public class DestinationAddDialog extends JDialog {
 
             double rating;
             try {
-                // String을 double로 변환: 래퍼 클래스 Double의 정적 메서드 사용
                 rating = Double.parseDouble(ratingStr);
                 if (rating < 0 || rating > 5) {
                     throw new NumberFormatException();
@@ -176,13 +178,22 @@ public class DestinationAddDialog extends JDialog {
                 return;
             }
 
-            // 태그 문자열 처리 (split, trim)
             String[] tags = tagsStr.isEmpty() ? new String[]{} : Arrays.stream(tagsStr.split(","))
-                    .map(String::trim) // String trim()
+                    .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .toArray(String[]::new);
 
-            TravelSearchPane.DestinationItem newItem = new TravelSearchPane.DestinationItem(name, country, description, rating, "default.jpg", tags);
+            // 🚨 FIX: 누락된 startDate와 endDate 인자를 빈 문자열로 추가하여 총 8개 인자를 맞춥니다.
+            DestinationItem newItem = new DestinationItem(
+                    name,
+                    country,
+                    description,
+                    rating,
+                    "default.jpg",
+                    "여행 기간 미정", // startDate (추가)
+                    "", // endDate (추가)
+                    tags // String[] (기존)
+            );
             travelSearchPane.addDestination(newItem);
             dispose();
         });

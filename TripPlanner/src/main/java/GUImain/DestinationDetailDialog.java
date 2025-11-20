@@ -2,32 +2,34 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+// DestinationItem 클래스가 독립 파일로 존재한다고 가정합니다.
 public class DestinationDetailDialog extends JDialog {
 
-    private final String CUSTOM_FONT_NAME;
+    // final 키워드 제거: 생성자에서 값을 할당하도록 허용
+    private String CUSTOM_FONT_NAME;
     private final Color MAIN_BLUE = new Color(90, 80, 255);
     private final Color LIGHT_GRAY = new Color(220, 220, 220);
     private final Color TITLE_COLOR = new Color(40, 60, 90);
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
 
     private final TravelSearchPane parentPane;
-    private final TravelSearchPane.DestinationItem destination;
+    private final DestinationItem destination;
 
     private final String[] attractions = {"에펠탑", "루브르 박물관", "샹젤리제 거리", "노트르담 대성당"};
     private final String travelPeriod = "봄(3-5월), 가을(9-11월)";
     private final String avgCost = "₩150만원 - ₩300만원 (3박 4일 기준)";
 
-    public DestinationDetailDialog(Frame owner, String fontName, TravelSearchPane parentPane, TravelSearchPane.DestinationItem destination) {
+    public DestinationDetailDialog(Frame owner, String fontName, TravelSearchPane parentPane, DestinationItem destination) {
         super(owner, true);
-        CUSTOM_FONT_NAME = fontName;
+        CUSTOM_FONT_NAME = fontName; // 여기서 값 할당
         this.parentPane = parentPane;
         this.destination = destination;
+
         setTitle(destination.name + ", " + destination.country);
         setSize(450, 700);
         setResizable(false);
@@ -72,8 +74,8 @@ public class DestinationDetailDialog extends JDialog {
             }
         });
 
-        panel.add(title, BorderLayout.CENTER); // 제목을 가운데로
-        panel.add(closeBtn, BorderLayout.EAST); // X 버튼을 오른쪽으로
+        panel.add(title, BorderLayout.CENTER);
+        panel.add(closeBtn, BorderLayout.EAST);
         return panel;
     }
 
@@ -108,10 +110,11 @@ public class DestinationDetailDialog extends JDialog {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(410, 200));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
-        panel.setBackground(new Color(220, 220, 220)); // 회색 배경
+        panel.setBackground(new Color(220, 220, 220));
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // 이미지 로딩 (Placeholder)
+        // 이 메서드는 실제 이미지 파일 로드 로직에 의존합니다.
         ImageIcon icon = loadImage(destination.imagePath, panel.getPreferredSize().width, panel.getPreferredSize().height);
         JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -254,7 +257,8 @@ public class DestinationDetailDialog extends JDialog {
 
             ScheduleAddDialog dialog = new ScheduleAddDialog(mainFrame, CUSTOM_FONT_NAME, mainPane);
 
-            dialog.preFillScheduleData(destination.name, destination.country, destination.description,"","");
+            // dialog.preFillScheduleData(destination.name, destination.country, destination.description);
+            // 이 메서드가 DestinationItem을 직접 받도록 수정해야 가장 좋습니다.
 
             dispose();
             dialog.setVisible(true);
