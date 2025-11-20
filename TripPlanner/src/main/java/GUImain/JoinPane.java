@@ -95,7 +95,19 @@ public class JoinPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 실제 회원가입 로직 (데이터 저장)을 여기에 추가합니다.
-                card.show(root, "로그인"); // 성공 시 로그인 화면으로 복귀
+                String id=idField.getText();
+                String pwd=new String(pwField.getPassword());
+                String nickname=nicknameField.getText();
+                Object[] uidata={id,pwd,nickname};
+
+                if(Main.tdm.isExistUserID(id)){
+                    //여기에 아이디 중복 경고 메시지 출력 부분 추가
+                    System.out.println("존재하는 아이디 입니다!");
+                }
+                else{
+                    Main.tdm.addUser(uidata);
+                    card.show(root, "로그인"); // 성공 시 로그인 화면으로 복귀
+                }
             }
         });
 

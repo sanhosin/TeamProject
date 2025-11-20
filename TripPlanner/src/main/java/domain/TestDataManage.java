@@ -1,28 +1,21 @@
 package main.java.domain;
 
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.List;
 
 import main.java.mgr.Factory;
 import main.java.mgr.Manager;
 
 public class TestDataManage {
-    public static User loginedUser=new User(); //임시로 설정해뒀습니다. 나중에는 실제 로그인한 유저로 변경할게요
-    public static Manager<TripLocation> locMgr=new Manager<>();
+    public static User loginedUser=null;
+    public static Trip currentTrip=null;
     public static Manager<User> userMgr=new Manager<>();
 
     public TestDataManage() {
-        readAllLocation("tripLocation.txt");
         readAllUser("user.txt");
     }
     //*********************입력데이터 콘솔창 입출력*************** */ */
-    public void readAllLocation(String fileName){
-        locMgr.readAll(fileName,new Factory<TripLocation>(){
-            public TripLocation create(){
-                return new TripLocation();
-            }
-        });
-    }
+    
 
     public void readAllUser(String fileName){
         userMgr.readAll(fileName,new Factory<User>(){
@@ -32,17 +25,8 @@ public class TestDataManage {
         });
     }
 
-    public void printAllLocation(){
-        locMgr.printAll();
-    }
-
     public void printAllUser(){
         userMgr.printAll();
-    }
-
-    public void searchLocation(Scanner keyScanner){
-        System.out.println("여행지 검색");
-        locMgr.search(keyScanner);
     }
 
     public void searchUser(Scanner keyScanner){
@@ -52,19 +36,6 @@ public class TestDataManage {
 
     //*************UI데이터 입력 및 연동******************* */
 
-    public void addPlan(Object[] uidata){
-        TripPlan newPlan=new TripPlan();
-        newPlan.set(uidata);
-        loginedUser.addPlan(newPlan);
-    }
-
-    public ArrayList<TripPlan> getPlanList(){
-        return loginedUser.getPlanList();
-    }
-
-    public TripLocation findLocation(String kwd){
-        return locMgr.find(kwd);
-    }
 
     public User findUser(String kwd){
         return userMgr.find(kwd);
@@ -76,4 +47,48 @@ public class TestDataManage {
         }
         return null;
     }
+    
+    public void setLoginedUser(User loginedUser2) {
+        loginedUser=loginedUser2;
+    }
+
+    public void addTrip(Object[] uidata) {
+        loginedUser.addTrip(uidata);
+    }
+
+    public List<Trip> getTripList(){
+        return loginedUser.getTripList();
+    }
+
+
+    public void setCurrentTrip(Trip t) {
+        currentTrip=t;
+    }
+
+
+    public void addPlan(Object[] uiData) {
+        currentTrip.addPlan(uiData);
+    }
+
+    public List<TripPlan> getPlanList(){
+        return currentTrip.getPlanList();
+    }
+
+
+    public String getCurrentTripTitle() {
+        return currentTrip.getTitle();
+    }
+
+
+    public boolean isExistUserID(String id){
+        if(userMgr.find(id)!=null)return true;
+        return false;
+    }
+
+    public void addUser(Object[] uidata) {
+        User user=new User();
+        user.set(uidata);
+        userMgr.mList.add(user);
+    }
+    
 }

@@ -85,6 +85,7 @@ public class LoginPane extends JPanel {
             if (loginedUser == null) {
                 // 여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
             } else {
+                Main.tdm.setLoginedUser(loginedUser);
                 card.show(root, "메인");
             }
         });
