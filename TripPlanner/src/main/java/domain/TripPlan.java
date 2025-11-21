@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import main.java.GUImain.Main;
 import main.java.facade.UIData;
 import main.java.mgr.Manageable;
 
@@ -13,7 +12,7 @@ public class TripPlan implements Manageable,UIData{
     String title;
     String date;
     String time;
-    TripLocation location;
+    String location;
     ArrayList<User> friendsList = new ArrayList<>();
     String review; //일정 리뷰는 잠시 String으로 변경해뒀습니다.(기존: ArrayList<PlanReview> reviews)
     Color color;
@@ -39,12 +38,12 @@ public class TripPlan implements Manageable,UIData{
     }
     @Override
     public void set(Object[] uidata) {
-        title=(String)uidata[TripPlan.PLAN_TITLE];
-        date=(String)uidata[TripPlan.PLAN_DATE];
-        time=(String)uidata[TripPlan.PLAN_TIME];
-        location=Main.tdm.findLocation((String)uidata[3]);
-        review=(String)uidata[TripPlan.PLAN_REVIEW];
-        color=(Color)uidata[TripPlan.PLAN_COLOR];
+        title=(String)uidata[PLAN_TITLE];
+        date=(String)uidata[PLAN_DATE];
+        time=(String)uidata[PLAN_TIME];
+        location=(String)uidata[PLAN_LOC];
+        review=(String)uidata[PLAN_REVIEW];
+        color=(Color)uidata[PLAN_COLOR];
     }
     @Override
     public Object[] getUidata() {
