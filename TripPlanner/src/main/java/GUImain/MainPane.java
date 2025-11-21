@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class MainPane extends JPanel {
 
@@ -82,10 +83,18 @@ public class MainPane extends JPanel {
 
     
     public void refreshTripListUI() {
+        if (listContainer == null) return;
+
         listContainer.removeAll();
-        for (Trip t:Main.tdm.getTripList()) {
-            listContainer.add(buildTripCard(t));
-            listContainer.add(Box.createVerticalStrut(15));
+
+        List<Trip> tripList = Main.tdm.getTripList();
+
+        if(tripList != null) {
+            for (Trip t : tripList) {
+                listContainer.add(buildTripCard(t));
+                // 카드 사이 간격 15픽셀
+                listContainer.add(Box.createVerticalStrut(15));
+            }
         }
         listContainer.revalidate();
         listContainer.repaint();
@@ -195,7 +204,19 @@ public class MainPane extends JPanel {
             }
         });
 
-        Object[] uidata=t.getUidata();
+        Object[] uidata = t.getUidata();
+        String tripTitle = (String)uidata[Trip.TRIP_TITLE];
+        String tripImgPath = (String)uidata[Trip.TRIP_IMG];
+
+        // 1. 데이터가 제대로 넘어오는지 확인
+        System.out.println("---------------------------------");
+        System.out.println("여행 제목: " + tripTitle);
+        
+        if(uidata.length > 1) {
+            System.out.println("이미지 경로 확인: " + tripImgPath); // 경로가 null인지 여기서 확인 가능
+        } else {
+            System.out.println("경고: 이미지 정보가 없습니다!");
+        }
 
         // 1. 좌측 이미지 영역
         JPanel imagePanel = new JPanel(new BorderLayout());
@@ -204,9 +225,21 @@ public class MainPane extends JPanel {
 
         JLabel imageLabel = new JLabel();
         imageLabel.setPreferredSize(new Dimension(100, 80));
+        // 경로랑 파일이 존재하면 이미지 띄우기
+        if (tripImgPath != null && !tripImgPath.isEmpty()) {
+            File imgFile = new File(tripImgPath);
+            
+            if (imgFile.exists()) {
+                // 파일이 있으면 로드
+                ImageIcon icon = new ImageIcon(tripImgPath);
+                Image img = icon.getImage();
+                Image scaledImg = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(scaledImg));
+                System.out.println("-> 이미지 로드 성공!");
+            } 
+        } 
 
         imagePanel.add(imageLabel, BorderLayout.CENTER);
-
         card.add(imagePanel, BorderLayout.WEST);
 
         // 2. 중앙 텍스트 영역
