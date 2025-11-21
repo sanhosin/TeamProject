@@ -1,15 +1,17 @@
 package main.java.domain;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import main.java.facade.UIData;
 import main.java.mgr.Manageable;
 
-public class User implements Manageable{
+public class User implements Manageable,UIData{
     //아이디, 비밀번호, 닉네임, 여행일정리스트, 친구목록
     String id;
     String password;
     String nickname;
-    ArrayList<TripPlan> planList=new ArrayList<>();
+    ArrayList<Trip> tripList=new ArrayList<>();
     ArrayList<User> friedsList=new ArrayList<>();
 
     @Override
@@ -35,16 +37,26 @@ public class User implements Manageable{
         return (this.id.equals(id)&&this.password.equals(pwd));
     }
 
-    public void addPlan(TripPlan newPlan){
-        planList.add(newPlan);
+    public void addTrip(Object[] uidata){
+        Trip t=new Trip();
+        t.set(uidata);
+        tripList.add(t);
     }
 
-    public ArrayList<TripPlan> getPlanList(){
-        return planList;
+    public List<Trip> getTripList() {
+        return tripList;
     }
 
-    public void removePlan(TripPlan tp){
-        planList.remove(tp);
+    @Override
+    public void set(Object[] uidata) {
+        id=(String)uidata[0];
+        password=(String)uidata[1];
+        nickname=(String)uidata[2];
     }
 
+    @Override
+    public Object[] getUidata() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUidata'");
+    }
 }
