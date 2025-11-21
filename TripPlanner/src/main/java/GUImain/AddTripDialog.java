@@ -2,9 +2,12 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -18,6 +21,10 @@ public class AddTripDialog extends JDialog {
 
     private JTextField titleField;
     private MainPane mainPane;
+
+    // 이미지 경로 및 라벨
+    private String selectedImagePath = null;
+    private JLabel imagePreviewLabel;
 
     public AddTripDialog(Frame owner, String fontName, MainPane mainPane) {
         super(owner, true);
@@ -109,10 +116,11 @@ public class AddTripDialog extends JDialog {
     }
 
     private JPanel buildImageUploadArea() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        final JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(245, 245, 245));
         panel.setBorder(BorderFactory.createDashedBorder(LIGHT_GRAY, 2, 4, 2, true));
         panel.setPreferredSize(new Dimension(340, 150));
+        panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; gbc.gridy = 0; gbc.insets = new Insets(0, 0, 5, 0);
@@ -127,6 +135,31 @@ public class AddTripDialog extends JDialog {
         text.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
         text.setForeground(LIGHT_GRAY);
         panel.add(text, gbc);
+
+        // 클릭시 컴퓨터에서 이미지 찾아서 업로드 
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "png", "jpeg", "gif"));
+
+                if (fileChooser.showOpenDialog(AddTripDialog.this) == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    selectedImagePath = selectedFile.getAbsolutePath();
+
+                    // 화면 갱신 로직을 여기에 직접 작성
+                    panel.removeAll(); 
+                    
+                    ImageIcon icon = new ImageIcon(selectedImagePath);
+                    Image img = icon.getImage().getScaledInstance(340, 150, Image.SCALE_SMOOTH);
+                    JLabel imgLabel = new JLabel(new ImageIcon(img));
+                    
+                    panel.add(imgLabel);
+                    panel.revalidate();
+                    panel.repaint();
+                }
+            }
+        });
 
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -163,9 +196,9 @@ public class AddTripDialog extends JDialog {
                     JOptionPane.showMessageDialog(AddTripDialog.this, "여행 제목을 입력해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
+                Object[] uidata = { title, selectedImagePath };
 
-                String imagePath=null; //이미지 경로 입력되도록 수정
-                Object[] uidata={title,imagePath};
+               // 삭제 :  String imagePath=null; //이미지 경로 입력되도록 수정
                 Main.tdm.addTrip(uidata);
                 mainPane.refreshTripListUI();
                 dispose();
