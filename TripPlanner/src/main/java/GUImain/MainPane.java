@@ -1,5 +1,6 @@
 package main.java.GUImain;
 
+import main.java.domain.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.awt.image.BufferedImage;
-import java.awt.Container;
 
 public class MainPane extends JPanel {
 
@@ -44,7 +44,7 @@ public class MainPane extends JPanel {
         }
     }
 
-    private List<DestinationItem> tripList = new ArrayList<>();
+    private TravelSearchPane travelSearchPanel;
     private JPanel listContainer;
     private JScrollPane scrollPane;
     private JPanel scheduleCardContainer;
@@ -58,13 +58,11 @@ public class MainPane extends JPanel {
         setLayout(new BorderLayout());
         setBackground(BG_COLOR);
 
-        // DestinationItem 초기화 코드
-        tripList.add(new DestinationItem("파리 여행", "프랑스, 파리", "로맨틱 여행", 4.8, "paris.jpg", "2025.11.15", "2025.11.20", new String[]{"로맨틱", "문화"}));
-        tripList.add(new DestinationItem("도쿄 여행", "일본, 도쿄", "미식과 문화", 4.9, "tokyo.jpg", "2025.12.01", "2025.12.07", new String[]{"미식", "문화"}));
-        tripList.add(new DestinationItem("서울 여행", "대한민국, 서울", "야경 투어", 4.7, "seoul.jpg", "2025.12.20", "2025.12.25", new String[]{"야경", "도시"}));
-        tripList.add(new DestinationItem("윈도우", "위치 미정", "여행 기간 미정", 0.0, "windows.jpg", "여행 기간 미정", "", new String[]{"미정"}));
-
         add(setupMainPanel(), BorderLayout.CENTER);
+    }
+
+    public void setTravelSearchPanel(TravelSearchPane travelSearchPanel){
+        this.travelSearchPanel=travelSearchPanel;
     }
 
     public JPanel setupMainPanel() {
@@ -82,22 +80,11 @@ public class MainPane extends JPanel {
         return panel;
     }
 
-    public void addTrip(DestinationItem item) {
-        tripList.add(item);
-        refreshTripListUI();
-    }
-
-    // 👈 오류 발생 메소드: 인자는 받으나, 내부에서 refreshTripListUI()를 호출하도록 수정합니다.
-    public void addScheduleItem(ScheduleItem item) {
-        // TestDataManage에서 이미 데이터 저장을 담당한다고 가정하고, 여기서는 화면 갱신만 요청합니다.
-        // 현재 MainPane은 TripList를 보여주므로, TripList 갱신을 요청합니다.
-        refreshTripListUI(); // 👈 refreshScheduleListUI 대신 refreshTripListUI를 호출합니다.
-    }
-
-    private void refreshTripListUI() {
+    
+    public void refreshTripListUI() {
         listContainer.removeAll();
-        for (DestinationItem item : tripList) {
-            listContainer.add(buildTripCard(item));
+        for (Trip t:Main.tdm.getTripList()) {
+            listContainer.add(buildTripCard(t));
             listContainer.add(Box.createVerticalStrut(15));
         }
         listContainer.revalidate();
@@ -169,7 +156,10 @@ public class MainPane extends JPanel {
         listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
         listContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        refreshTripListUI();
+        if(Main.tdm.loginedUser!=null){
+            //loginedUser가 null일때 메인화면에 경고창 띄우는 기능 구현
+            refreshTripListUI();
+        }
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -183,9 +173,10 @@ public class MainPane extends JPanel {
         return panel;
     }
 
-    private JPanel buildTripCard(DestinationItem item) {
+    private JPanel buildTripCard(Trip t) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
         card.setPreferredSize(new Dimension(800, 100));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100)); //카드 높이 고정
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
@@ -197,9 +188,14 @@ public class MainPane extends JPanel {
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Main.tdm.setCurrentTrip(t);
+                travelSearchPanel.setTravelSearchPaneTitle();
+                travelSearchPanel.refreshPlanListUI();
                 MainPane.this.card.show(root, "여행지 검색");
             }
         });
+
+        Object[] uidata=t.getUidata();
 
         // 1. 좌측 이미지 영역
         JPanel imagePanel = new JPanel(new BorderLayout());
@@ -218,18 +214,17 @@ public class MainPane extends JPanel {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(item.name);
+        JLabel nameLabel = new JLabel((String)uidata[Trip.TRIP_TITLE]);
         nameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 16));
         nameLabel.setForeground(TITLE_COLOR);
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel locationLabel = new JLabel("📍 " + item.country);
+        JLabel locationLabel = new JLabel("📍 " + "미정");
         locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
         locationLabel.setForeground(new Color(90, 90, 110));
         locationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        String dateRange = item.endDate.isEmpty() || item.startDate.equals(item.endDate) ? item.startDate : item.startDate + " - " + item.endDate;
-        JLabel dateLabel = new JLabel(dateRange);
+        JLabel dateLabel = new JLabel("미정");
         dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
         dateLabel.setForeground(new Color(90, 90, 110));
         dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

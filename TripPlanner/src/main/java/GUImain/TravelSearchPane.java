@@ -2,6 +2,9 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import main.java.domain.*;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,8 +28,9 @@ public class TravelSearchPane extends JPanel {
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
     private final Color DOT_COLOR = new Color(255, 60, 60);
 
-    // 여행지 목록을 저장할 리스트 (임시로 추가)
-    private List<DestinationItem> destinations = new ArrayList<>();
+    JPanel listContainer;
+    JLabel tripTitle;
+
 
     public TravelSearchPane(JPanel root, CardLayout card, MainPane mainPaneRef) {
         this.root = root;
@@ -46,15 +50,19 @@ public class TravelSearchPane extends JPanel {
         return this.mainPaneRef;
     }
 
-    /**
-     * DestinationAddDialog에서 새로운 여행지를 추가할 때 호출됩니다.
-     */
-    public void addDestination(DestinationItem item) {
-        this.destinations.add(item);
-        // 실제로는 리스트를 업데이트하고 화면을 새로고침하는 로직이 추가되어야 합니다.
-        System.out.println("새로운 여행지가 추가되었습니다: " + item.name);
+    public void refreshPlanListUI(){
+        listContainer.removeAll();
+        for (TripPlan tp:Main.tdm.getPlanList()) {
+            listContainer.add(buildScheduleCard(tp));
+            listContainer.add(Box.createVerticalStrut(15));
+        }
+        listContainer.revalidate();
+        listContainer.repaint();
     }
-    // **********************************
+
+    public void setTravelSearchPaneTitle(){
+        tripTitle.setText(Main.tdm.getCurrentTripTitle());
+    }
 
     public JPanel setupMainPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -87,6 +95,7 @@ public class TravelSearchPane extends JPanel {
         backIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Main.tdm.setCurrentTrip(null);
                 card.show(root, "메인"); // 여행 목록 화면(MainPane)으로 복귀
             }
         });
@@ -109,7 +118,7 @@ public class TravelSearchPane extends JPanel {
         addScheduleBtn.addActionListener(e -> {
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             // Image 3의 일정 추가 다이얼로그 호출
-            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, mainPaneRef);
+            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME,this);
             dialog.setVisible(true);
         });
 
@@ -126,23 +135,18 @@ public class TravelSearchPane extends JPanel {
         panel.setOpaque(false);
         panel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        JLabel tripTitle = new JLabel("파리 여행"); // 여행 상세 타이틀
+        tripTitle = new JLabel(); // 여행 상세 타이틀은 MainPane에서 화면  초기화
         tripTitle.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 28));
         tripTitle.setForeground(TITLE_COLOR);
         tripTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JPanel listContainer = new JPanel();
+        listContainer = new JPanel();
         listContainer.setOpaque(false);
         listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
         listContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         listContainer.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        // 샘플 일정 카드 (Image 2 참고)
-        listContainer.add(buildScheduleCard("에펠탑 방문", "2025-11-15 10:00", "파리, 프랑스", "에펠탑 관람 및 사진 촬영", new Color(0, 150, 136)));
-        listContainer.add(Box.createVerticalStrut(15));
-        listContainer.add(buildScheduleCard("루브르 박물관", "2025-11-15 14:00", "파리, 프랑스", "모나리자 감상", new Color(255, 60, 60)));
-        listContainer.add(Box.createVerticalStrut(15));
-        listContainer.add(buildScheduleCard("센 강 유람선", "2025-11-16 18:00", "파리, 프랑스", "센 강 야경 투어", new Color(20, 120, 255)));
+        if(Main.tdm.loginedUser!=null) refreshPlanListUI();
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -156,7 +160,7 @@ public class TravelSearchPane extends JPanel {
         return panel;
     }
 
-    private JPanel buildScheduleCard(String title, String datetime, String location, String description, Color dotColor) {
+    private JPanel buildScheduleCard(TripPlan tp) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
         card.setBackground(CARD_COLOR);
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
@@ -165,9 +169,11 @@ public class TravelSearchPane extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
+        Object[] uidata=tp.getUidata();
+
         // 좌측 도트
         JLabel dot = new JLabel("●");
-        dot.setForeground(dotColor);
+        dot.setForeground((Color)uidata[TripPlan.PLAN_COLOR]);
         dot.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 10));
 
         // 중앙 텍스트 영역
@@ -175,17 +181,18 @@ public class TravelSearchPane extends JPanel {
         inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
         inner.setOpaque(false);
 
-        JLabel t = new JLabel(title);
+        JLabel t = new JLabel((String)uidata[TripPlan.PLAN_TITLE]);
         t.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 16));
         t.setForeground(TITLE_COLOR);
         t.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel dt = new JLabel("🕒 " + datetime + "  © " + location);
+        JLabel dt = new JLabel("🕒 " + (String)uidata[TripPlan.PLAN_DATE] +
+         "  © " + (String)uidata[TripPlan.PLAN_LOC]);
         dt.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         dt.setForeground(new Color(90, 90, 110));
         dt.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel d = new JLabel(description);
+        JLabel d = new JLabel((String)uidata[TripPlan.PLAN_REVIEW]);
         d.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         d.setForeground(new Color(100, 100, 100));
         d.setBorder(new EmptyBorder(5, 0, 0, 0));
