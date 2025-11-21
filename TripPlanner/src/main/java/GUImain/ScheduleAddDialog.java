@@ -27,8 +27,7 @@ public class ScheduleAddDialog extends JDialog {
             new Color(51, 153, 255),
             new Color(255, 51, 51)
     };
-
-    private MainPane mainPane;
+    private TravelSearchPane travelSearchPanel;
     private JTextField titleField;
     private JTextField dateField;
     private JTextField timeField;
@@ -36,9 +35,9 @@ public class ScheduleAddDialog extends JDialog {
     private JTextField descriptionField;
     private Color selectedColor = COLOR_OPTIONS[0];
 
-    public ScheduleAddDialog(Frame owner, String fontName, MainPane mainPane) {
+    public ScheduleAddDialog(Frame owner, String fontName, TravelSearchPane travelSearchPanel) {
         super(owner, true);
-        this.mainPane = mainPane;
+        this.travelSearchPanel=travelSearchPanel;
         setTitle("일정 설정");
         setSize(480, 580);
         setResizable(false);
@@ -236,18 +235,8 @@ public class ScheduleAddDialog extends JDialog {
 
             // 1. TestDataManage에 데이터 저장 (백엔드 저장)
             Object[] uiData={title,date,time,location,description,selectedColor};
-            // Main.tdm이 static으로 선언되어 있어야 합니다.
-            // Main.tdm.addPlan(uiData);
-
-            // 2. MainPane의 화면 갱신을 위해 ScheduleItem 객체를 생성하여 전달
-            MainPane.ScheduleItem newItem = new MainPane.ScheduleItem(
-                    title, date, time, location, description, selectedColor
-            );
-
-            if (mainPane != null) {
-                // MainPane의 addScheduleItem(ScheduleItem item) 메소드에 newItem을 전달합니다.
-                mainPane.addScheduleItem(newItem);
-            }
+            Main.tdm.addPlan(uiData);
+            travelSearchPanel.refreshPlanListUI();
 
             dispose();
         });
