@@ -7,9 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+
 
 public class AddTripDialog extends JDialog {
 
@@ -160,25 +158,16 @@ public class AddTripDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String title = titleField.getText().trim();
+                
                 if (title.isEmpty() || title.equals("여행 제목을 입력하세요")) {
                     JOptionPane.showMessageDialog(AddTripDialog.this, "여행 제목을 입력해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                // 🚨 수정: 독립된 DestinationItem 객체를 생성하여 MainPane에 전달합니다.
-                // TravelSearchPane.DestinationItem 대신 독립된 DestinationItem을 사용합니다.
-                DestinationItem newItem = new DestinationItem(
-                        title,
-                        "위치 미정",
-                        "사용자가 등록한 여행",
-                        0.0,
-                        "default.jpg",
-                        "여행 기간 미정",
-                        "",
-                        new String[]{"미정"}
-                );
-
-                mainPane.addTrip(newItem); // MainPane의 addTrip 메서드 호출
+                String imagePath=null; //이미지 경로 입력되도록 수정
+                Object[] uidata={title,imagePath};
+                Main.tdm.addTrip(uidata);
+                mainPane.refreshTripListUI();
                 dispose();
             }
         });

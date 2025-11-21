@@ -33,12 +33,12 @@ public class Main {
         travelSearchPanel = new TravelSearchPane(root, card, mainPanel);
         // 3. JoinPane 인스턴스 생성
         joinPanel = new JoinPane(root, card);
-
-        // tdm.printAllLocation(); // 데이터 로드 확인용 코드 제거
-        // tdm.printAllUser(); // 데이터 로드 확인용 코드 제거
-
+        //TravelSearchPane을 여행별로 다르게 나타내기 위해 참조를 넘겨줍니다.
+        mainPanel.setTravelSearchPanel(travelSearchPanel);
+       
         createAndShowGUI();
     }
+
 
     void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

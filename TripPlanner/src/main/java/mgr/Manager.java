@@ -74,7 +74,7 @@ public class Manager<T extends Manageable> {
             filein=new Scanner(new File(filePath));
         }
         catch(FileNotFoundException e){
-            System.out.println("파일 경로 잘못됨: "+filePath);
+           // System.out.println("파일 경로 잘못됨: "+filePath);
         }
         return filein;
     }
