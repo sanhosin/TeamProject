@@ -52,6 +52,10 @@ public class TestDataManage {
         loginedUser=loginedUser2;
     }
 
+    public User getLoginedUser(){
+        return loginedUser;
+    }
+
     public void addTrip(Object[] uidata) {
         loginedUser.addTrip(uidata);
     }
@@ -68,6 +72,11 @@ public class TestDataManage {
 
     public void addPlan(Object[] uiData) {
         currentTrip.addPlan(uiData);
+        currentTrip.setDetails();
+    }
+
+    public void modifyPlan(){
+        currentTrip.setDetails();
     }
 
     public List<TripPlan> getPlanList(){
@@ -89,6 +98,12 @@ public class TestDataManage {
         User user=new User();
         user.set(uidata);
         userMgr.mList.add(user);
+    }
+
+
+    public void deletePlan(TripPlan tp) {
+        currentTrip.planMgr.mList.remove(tp);
+        currentTrip.setDetails();
     }
     
 }

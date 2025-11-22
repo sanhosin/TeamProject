@@ -97,6 +97,7 @@ public class TravelSearchPane extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 Main.tdm.setCurrentTrip(null);
                 card.show(root, "메인"); // 여행 목록 화면(MainPane)으로 복귀
+                mainPaneRef.refreshTripListUI();
             }
         });
 
@@ -146,7 +147,7 @@ public class TravelSearchPane extends JPanel {
         listContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         listContainer.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        if(Main.tdm.loginedUser!=null) refreshPlanListUI();
+        if(Main.tdm.getLoginedUser()!=null) refreshPlanListUI();
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -208,7 +209,17 @@ public class TravelSearchPane extends JPanel {
         btnPanel.setOpaque(false);
 
         JButton editBtn = new JButton("✏");
+        editBtn.addActionListener(e->{
+             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            // Image 3의 일정 추가 다이얼로그 호출
+            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME,this,tp);
+            dialog.setVisible(true);
+        });
         JButton deleteBtn = new JButton("🗑");
+        deleteBtn.addActionListener(e->{
+            Main.tdm.deletePlan(tp);
+            refreshPlanListUI();
+        });
 
         // 버튼 스타일링
         editBtn.setFocusPainted(false); editBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

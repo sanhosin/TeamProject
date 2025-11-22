@@ -10,11 +10,19 @@ import main.java.mgr.Manager;
 public class Trip implements Manageable,UIData {
     String title;
     String imagePath;
+    String locationDetail;
+    String dateDuration;
     Manager<TripPlan> planMgr=new Manager<>();
 
     public static int TRIP_TITLE=0;
     public static int TRIP_IMG=1;
 
+    public String getLocationDetail(){
+        return locationDetail;
+    }
+    public String getDateDuration(){
+        return dateDuration;
+    }
     @Override
     public void set(Object[] uidata) {
         title=(String)uidata[TRIP_TITLE];
@@ -58,5 +66,73 @@ public class Trip implements Manageable,UIData {
     public String getTitle() {
         return title;
     }
-    
+
+    /**********TripCard 세부정보 설정****** */
+    public void setDetails() {
+        if(planMgr.mList.isEmpty()){
+            locationDetail="미정";
+            dateDuration="미정";
+            return;
+        }
+        int startOfDate=999999;
+        int endOfDate=0;
+        String locations="";
+        int maxLocationNum=planMgr.mList.size();
+
+        for(TripPlan tp:planMgr.mList){
+
+            if(maxLocationNum>1){
+                locations+=tp.getLocation()+",";
+                maxLocationNum--;
+            }
+            else if(maxLocationNum==1){
+                locations+=tp.getLocation();
+                maxLocationNum--;
+            }
+
+            String date=tp.getDateDetail();
+            date=date.substring(0,6);
+            if(date.contains("?"))continue;
+
+            if(!isAllDigit(date))continue;
+            int intDate=Integer.parseInt(date);
+
+            if(startOfDate>intDate)startOfDate=intDate;
+            if(endOfDate<intDate)endOfDate=intDate;
+        }
+        locationDetail=locations;
+        if(endOfDate==0||startOfDate==999999)dateDuration="미정";
+        else dateDuration=parseDate(startOfDate)+"~"+parseDate(endOfDate);
+    }
+
+    private boolean isAllDigit(String date){
+        for(int i=0;i<date.length();i++){
+            char c=date.charAt(i);
+            if(!Character.isDigit(c))return false;
+        }
+        return true;
+    }
+
+    private String parseDate(int intDate){
+        String target=intDate+"";
+        int targetLen=target.length();
+        switch (targetLen) {
+            case 5:
+                target="0"+target;
+                break;
+            case 4:
+                target="00"+target;
+            default:
+                break;
+        }
+
+        StringBuffer buff=new StringBuffer(target);
+        buff.insert(4,'/');
+        buff.insert(2,'/');
+        target=buff.toString();
+        return target;
+    }
+
+
+
 }
