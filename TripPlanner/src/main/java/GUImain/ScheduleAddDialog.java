@@ -2,6 +2,9 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import main.java.domain.TripPlan;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,11 +37,32 @@ public class ScheduleAddDialog extends JDialog {
     private JTextField locationField;
     private JTextField descriptionField;
     private Color selectedColor = COLOR_OPTIONS[0];
+    private TripPlan toModify=null;
+    private Object[] uidata;
+    private String dialogTitle;
 
     public ScheduleAddDialog(Frame owner, String fontName, TravelSearchPane travelSearchPanel) {
         super(owner, true);
         this.travelSearchPanel=travelSearchPanel;
-        setTitle("일정 설정");
+        dialogTitle="일정 추가";
+        setTitle(dialogTitle);
+        setSize(480, 580);
+        setResizable(false);
+        setLocationRelativeTo(owner);
+        setUndecorated(true);
+        getRootPane().setBorder(BorderFactory.createLineBorder(LIGHT_GRAY, 1));
+
+        setContentPane(buildPanel());
+    }
+
+    //생성자 추가로 일정 수정기능과 일정추가 구분, 메서드에서는 toModify의 값이 null인지 아닌지에 따라 판단하도록 추가함
+    public ScheduleAddDialog(Frame owner, String fontName, TravelSearchPane travelSearchPanel,TripPlan toModify) {
+        super(owner, true);
+        this.travelSearchPanel=travelSearchPanel;
+        this.toModify=toModify;
+        uidata=toModify.getUidata();
+        dialogTitle="일정 수정";
+        setTitle(dialogTitle);
         setSize(480, 580);
         setResizable(false);
         setLocationRelativeTo(owner);
@@ -62,10 +86,19 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.setBackground(Color.WHITE);
         mainPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        mainPanel.add(buildTitle("일정 설정"));
+        mainPanel.add(buildTitle(dialogTitle));
         mainPanel.add(Box.createVerticalStrut(25));
 
-        titleField = buildInputField("일정 제목을 입력하세요", 40);
+        if(toModify==null){
+            titleField = buildInputField("일정 제목을 입력하세요", 40);
+            locationField = buildInputField("위치를 입력하세요", 40);
+            descriptionField = buildInputField("설명을 입력하세요", 40);
+        }
+        else{
+            titleField = buildInputField((String)uidata[TripPlan.PLAN_TITLE], 40);
+            locationField = buildInputField((String)uidata[TripPlan.PLAN_LOC], 40);
+            descriptionField = buildInputField((String)uidata[TripPlan.PLAN_REVIEW], 40);
+        }
         mainPanel.add(buildLabel("제목"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(titleField);
@@ -74,13 +107,11 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.add(buildDateTimeRow());
         mainPanel.add(Box.createVerticalStrut(20));
 
-        locationField = buildInputField("위치를 입력하세요", 40);
         mainPanel.add(buildLabel("장소"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(locationField);
         mainPanel.add(Box.createVerticalStrut(20));
 
-        descriptionField = buildInputField("설명을 입력하세요", 40);
         mainPanel.add(buildLabel("설명"));
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(descriptionField);
@@ -149,9 +180,15 @@ public class ScheduleAddDialog extends JDialog {
         inputRow.setOpaque(false);
         inputRow.setMaximumSize(new Dimension(400, 40));
 
-        dateField = buildInputField("2023년 11월 15일", 40);
+        if(toModify==null){
+            dateField = buildInputField("25/11/15", 40);
+            timeField = buildInputField("10:00", 40);
+        }
+        else{
+            dateField = buildInputField((String)uidata[TripPlan.PLAN_DATE], 40);
+            timeField = buildInputField((String)uidata[TripPlan.PLAN_TIME], 40);
+        }
         dateField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        timeField = buildInputField("오전 10:00", 40);
         timeField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         inputRow.add(dateField);
@@ -234,8 +271,14 @@ public class ScheduleAddDialog extends JDialog {
             String description = descriptionField.getText();
 
             // 1. TestDataManage에 데이터 저장 (백엔드 저장)
-            Object[] uiData={title,date,time,location,description,selectedColor};
-            Main.tdm.addPlan(uiData);
+            uidata=new Object[]{title,date,time,location,description,selectedColor};
+            if(toModify==null){
+                Main.tdm.addPlan(uidata);
+            }
+            else{
+                toModify.set(uidata);
+                Main.tdm.modifyPlan();
+            }
             travelSearchPanel.refreshPlanListUI();
 
             dispose();

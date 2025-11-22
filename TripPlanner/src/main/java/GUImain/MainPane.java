@@ -27,24 +27,6 @@ public class MainPane extends JPanel {
     private final Color TITLE_COLOR = new Color(40, 60, 90);
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
 
-    public static class ScheduleItem {
-        String title;
-        String date;
-        String time;
-        String location;
-        String description;
-        Color color;
-
-        public ScheduleItem(String title, String date, String time, String location, String description, Color color) {
-            this.title = title;
-            this.date = date;
-            this.time = time;
-            this.location = location;
-            this.description = description;
-            this.color = color;
-        }
-    }
-
     private TravelSearchPane travelSearchPanel;
     private JPanel listContainer;
     private JScrollPane scrollPane;
@@ -165,7 +147,7 @@ public class MainPane extends JPanel {
         listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
         listContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        if(Main.tdm.loginedUser!=null){
+        if(Main.tdm.getLoginedUser()!=null){
             //loginedUser가 null일때 메인화면에 경고창 띄우는 기능 구현
             refreshTripListUI();
         }
@@ -252,12 +234,14 @@ public class MainPane extends JPanel {
         nameLabel.setForeground(TITLE_COLOR);
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel locationLabel = new JLabel("📍 " + "미정");
+        String toLocationLabel=(t.getPlanList().isEmpty())?"미정":t.getLocationDetail();
+        JLabel locationLabel = new JLabel("📍 " + toLocationLabel);
         locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
         locationLabel.setForeground(new Color(90, 90, 110));
         locationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel dateLabel = new JLabel("미정");
+        String toDateLabel=(t.getPlanList().isEmpty())?"미정":t.getDateDuration();
+        JLabel dateLabel = new JLabel(toDateLabel);
         dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
         dateLabel.setForeground(new Color(90, 90, 110));
         dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
