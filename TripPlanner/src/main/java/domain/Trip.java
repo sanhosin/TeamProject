@@ -78,25 +78,35 @@ public class Trip implements Manageable,UIData {
         // 메인 화면 일정 순으로 정렬 (여행 추가에 일정을 입력 하는 창을 만들었다는 가정하에 만들어서 오류가 발생할 수 있음)
         ArrayList<TripPlan> list = (ArrayList<TripPlan>) planMgr.mList;
 
-        for (int i = 0; i < list.size() - 1; i++) {
-            for (int j = 0; j < list.size() - 1 - i; j++) {
-                
+        for(int i = 0; i < list.size()-1; i ++){
+            for(int j = 0; j < list.size()-1-i; j ++){
+
                 String s1 = list.get(j).getDateDetail();
                 String s2 = list.get(j + 1).getDateDetail();
 
-                long date1, date2;
+                long date1; 
+                long date2;
 
-                if (s1.contains("?")) date1 = Long.MAX_VALUE;
-                else date1 = Long.parseLong(s1);
-
-                if (s2.contains("?")) date2 = Long.MAX_VALUE;
-                else date2 = Long.parseLong(s2);
-
-                if (date1 > date2) {
-                    TripPlan temp = list.get(j);
-                    list.set(j, list.get(j + 1));
-                    list.set(j + 1, temp);
+                if(s1.contains("?")){
+                    date1 = Long.MAX_VALUE;
                 }
+                else{
+                    date1 = Long.parseLong(s1);
+                }
+
+                if(s2.contains("?")){
+                    date2 = Long.MAX_VALUE;
+                }
+                else{
+                    date2 = Long.parseLong(s2);
+                }
+
+                if(date1 > date2){
+                    TripPlan temp = list.get(j);
+                    list.set(j, list.get(j+1));
+                    list.set(j+1, temp);
+                }
+
             }
         }
 
