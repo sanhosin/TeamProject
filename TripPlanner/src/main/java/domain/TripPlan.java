@@ -24,15 +24,19 @@ public class TripPlan implements Manageable, UIData {
     public static final int PLAN_LOC = 3;
     public static final int PLAN_REVIEW = 4;
     public static final int PLAN_COLOR = 5;
-
+    
+    // 정보 저장
     @Override
     public void read(Scanner scan) {
-
+        this.title = scan.next();
+        this.date = scan.next();
+        this.time = scan.next();
+        this.location = scan.next();
     }
-
+    // 디버깅용 화면 출력
     @Override
     public void print() {
-
+        System.out.printf("[%s] 날짜:%s 시간:%s 장소:%s\n", title, date, time, location);
     }
 
     @Override

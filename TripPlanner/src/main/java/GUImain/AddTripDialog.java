@@ -141,6 +141,11 @@ public class AddTripDialog extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
+                // 업로드 누르면 바로 사진을 찾기 쉽도록 변경
+                String userHome = System.getProperty("user.home");
+                File Img_File = new File(userHome, "OneDrive/사진");
+                fileChooser.setCurrentDirectory(Img_File);
+        
                 fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "png", "jpeg", "gif"));
 
                 if (fileChooser.showOpenDialog(AddTripDialog.this) == JFileChooser.APPROVE_OPTION) {
