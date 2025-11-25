@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import main.java.facade.UIData;
+import main.java.mgr.Factory;
 import main.java.mgr.Manageable;
+import main.java.mgr.Manager;
 
 public class User implements Manageable,UIData{
     //아이디, 비밀번호, 닉네임, 여행일정리스트, 친구목록
     String id;
     String password;
     String nickname;
-    ArrayList<Trip> tripList=new ArrayList<>();
+    Manager<Trip> tripMgr=new Manager<>();
     ArrayList<User> friedsList=new ArrayList<>();
 
     @Override
@@ -19,6 +21,13 @@ public class User implements Manageable,UIData{
         id=scan.next();
         password=scan.next();
         nickname=scan.next();
+    }
+    public void readTrip(String filename){
+        tripMgr.readAll(filename, new Factory<Trip>() {
+            public Trip create(){
+                return new Trip();
+            }
+        });
     }
 
     @Override
@@ -40,11 +49,11 @@ public class User implements Manageable,UIData{
     public void addTrip(Object[] uidata){
         Trip t=new Trip();
         t.set(uidata);
-        tripList.add(t);
+        tripMgr.mList.add(t);
     }
 
     public List<Trip> getTripList() {
-        return tripList;
+        return tripMgr.mList;
     }
 
     @Override
@@ -58,5 +67,17 @@ public class User implements Manageable,UIData{
     public Object[] getUidata() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getUidata'");
+    }
+
+    public String getID() {
+        return id;
+    }
+
+    public String getNick() {
+        return nickname;
+    }
+
+    public String getPwd() {
+        return password;
     }
 }

@@ -52,46 +52,11 @@ public class TravelSearchPane extends JPanel {
 
     public void refreshPlanListUI(){
         listContainer.removeAll();
-        // 일정 추가 목록에서 시간 순으로 배치
-        ArrayList<TripPlan> planList = (ArrayList<TripPlan>)Main.tdm.getPlanList();
-
-        for(int i = 0; i < planList.size()-1; i ++){
-            for(int j = 0; j < planList.size()-1-i; j ++){
-
-                String s1 = planList.get(j).getDateDetail();
-                String s2 = planList.get(j + 1).getDateDetail();
-
-                long date1; 
-                long date2;
-
-                if(s1.contains("?")){
-                    date1 = Long.MAX_VALUE;
-                }
-                else{
-                    date1 = Long.parseLong(s1);
-                }
-
-                if(s2.contains("?")){
-                    date2 = Long.MAX_VALUE;
-                }
-                else{
-                    date2 = Long.parseLong(s2);
-                }
-
-                if(date1 > date2){
-                    TripPlan temp = planList.get(j);
-                    planList.set(j, planList.get(j+1));
-                    planList.set(j+1, temp);
-                }
-
-            }
-        }
-
-        for (TripPlan tp: planList) {
+        
+        for (TripPlan tp:Main.tdm.getPlanList()) {
             listContainer.add(buildScheduleCard(tp));
             listContainer.add(Box.createVerticalStrut(15));
         }
-
         listContainer.revalidate();
         listContainer.repaint();
     }

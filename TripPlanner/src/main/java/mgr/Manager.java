@@ -12,7 +12,11 @@ public class Manager<T extends Manageable> {
     // main.java.mgr.Manager.java 파일 내, readAll 메소드 수정
     public void readAll(String filename, Factory<T> fac){
         Scanner filein = null;
-        filein = openFile("src/"+filename);
+        
+        filein=openFile(filename);
+        if(filein==null){
+            filein = openFile("src/"+filename);
+        }
         if(filein == null)
         {
             filein = openFile("TripPlanner/src/"+filename);

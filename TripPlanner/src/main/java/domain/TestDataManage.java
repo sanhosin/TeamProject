@@ -1,6 +1,9 @@
 package main.java.domain;
 
 import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import main.java.mgr.Factory;
@@ -14,6 +17,55 @@ public class TestDataManage {
     public TestDataManage() {
         readAllUser("user.txt");
     }
+    //*********************데이터 파일 저장****************/
+    public void readData(){
+        loginedUser.readTrip(loginedUser.getID()+"_trip.txt");
+    }
+    public void saveUserData() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("user.txt"))) {
+            for(User u:userMgr.mList){
+                bw.write(u.getID()+" "+u.getPwd()+" "+u.getNick()+"\n");
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void saveTripData(String userID){
+
+        try(BufferedWriter bw=new BufferedWriter(new FileWriter(userID+"_trip.txt"))){
+            for(Trip t:loginedUser.getTripList()){
+                bw.write(replaceSpace(t.getTitle())+" "+t.getImagePath()+" "+
+                replaceSpace(t.getLocationDetail())+" "+replaceSpace(t.getDateDuration())+"\n");
+
+                List<TripPlan> pList=t.getPlanList();
+                bw.write(pList.size()+"\n");
+
+                for(TripPlan tp:pList){
+                    bw.write(replaceSpace(tp.getTitle())+" "+replaceSpace(tp.getDate())+
+                    " "+replaceSpace(tp.getTime())+" "+replaceSpace(tp.getLocation())+" "+
+                    replaceSpace(tp.getReview())+"\n");
+                }
+            }
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    //read에서 scan.next()읽기때문에 스페이스바를 _로 대체시킴
+    private String replaceSpace(String haveSpace){
+        if(haveSpace==null)return "null";
+        if(haveSpace.equals(""))return "null";
+        String result="";
+        String[] sArray=haveSpace.split(" ");
+        if(sArray.length==1)return haveSpace;
+        for(String s:sArray){
+            result+=s+"_";
+        }
+        return result.substring(0,result.length()-1);
+    }
+    
     //*********************입력데이터 콘솔창 입출력*************** */ */
     
 

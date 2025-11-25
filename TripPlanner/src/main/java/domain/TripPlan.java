@@ -9,7 +9,6 @@ import main.java.mgr.Manageable;
 
 public class TripPlan implements Manageable, UIData {
     // 일정 제목, 날짜, 여행지, 설명, 사진, 예약 숙소, 같이 여행하는 친구(유저) 정보
-    int key;
     String title;
     String date;
     String time;
@@ -32,6 +31,16 @@ public class TripPlan implements Manageable, UIData {
         this.date = scan.next();
         this.time = scan.next();
         this.location = scan.next();
+        this.review=scan.next();
+        changeNUll();
+    }
+
+    private void changeNUll(){
+        if(title.equals("null"))title=null;
+        if(date.equals("null"))date=null;
+        if(time.equals("null"))time=null;
+        if(location.equals("null"))location=null;
+        if(review.equals("null"))review=null;
     }
     // 디버깅용 화면 출력
     @Override
@@ -97,6 +106,18 @@ public class TripPlan implements Manageable, UIData {
     }
     public String getLocation() {
         return location;
+    }
+    public String getTitle() {
+        return title;
+    }
+    public String getDate() {
+        return date;
+    }
+    public String getTime() {
+        return time;
+    }
+    public String getReview() {
+        return review;
     }
 
 }

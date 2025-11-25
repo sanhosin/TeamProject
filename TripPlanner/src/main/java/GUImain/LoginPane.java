@@ -9,6 +9,7 @@ public class LoginPane extends JPanel {
     JPanel root;
     CardLayout card;
     JPanel loginPanel;
+    MainPane mainpanel;
 
     private final String CUSTOM_FONT_NAME = "맑은 고딕";
     private final Color MAIN_BLUE = new Color(90, 80, 255);
@@ -84,8 +85,12 @@ public class LoginPane extends JPanel {
             User loginedUser = Main.tdm.isExistUser(id, pwd);
             if (loginedUser == null) {
                 // 여기에 아이디/비번 틀렸을 때 안내메시지 띄우는 기능 추가
+                System.out.println("존재하지 않는 아이디/비밀번호 입니다.");
             } else {
                 Main.tdm.setLoginedUser(loginedUser);
+                Main.tdm.readData();
+                mainpanel.refreshTripListUI();
+                
                 card.show(root, "메인");
             }
         });
@@ -130,6 +135,10 @@ public class LoginPane extends JPanel {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         field.setBackground(new Color(245, 245, 245));
         field.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
+    }
+
+    public void getMainPane(MainPane mainpanel){
+        this.mainpanel=mainpanel;
     }
 
     class PlaceholderTextField extends JTextField {

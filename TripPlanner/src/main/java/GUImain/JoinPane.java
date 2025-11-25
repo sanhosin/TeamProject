@@ -99,6 +99,10 @@ public class JoinPane extends JPanel {
                 String pwd=new String(pwField.getPassword());
                 String nickname=nicknameField.getText();
                 Object[] uidata={id,pwd,nickname};
+                if(id.equals("")||pwd.equals("")||nickname.equals("")){
+                    System.out.println("모두 입력해주세요.");
+                    return;
+                }
 
                 if(Main.tdm.isExistUserID(id)){
                     //여기에 아이디 중복 경고 메시지 출력 부분 추가

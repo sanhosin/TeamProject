@@ -38,8 +38,24 @@ public class Trip implements Manageable,UIData {
 
     @Override
     public void read(Scanner scan) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'read'");
+        title=scan.next();
+        imagePath=scan.next();
+        locationDetail=scan.next();
+        dateDuration=scan.next();
+        changeNUll();
+
+        int planNum=scan.nextInt();
+        for(int i=0;i<planNum;i++){
+            TripPlan tp=new TripPlan();
+            tp.read(scan);
+            planMgr.mList.add(tp);
+        }
+    }
+    private void changeNUll(){
+        if(title.equals("null"))title=null;
+        if(imagePath.equals("null"))imagePath=null;
+        if(locationDetail.equals("null"))locationDetail=null;
+        if(dateDuration.equals("null"))dateDuration=null;
     }
 
     @Override
@@ -70,13 +86,15 @@ public class Trip implements Manageable,UIData {
 
     /**********TripCard 세부정보 설정****** */
     public void setDetails() {
-        if(planMgr.mList.isEmpty()){
+        ArrayList<TripPlan> list = (ArrayList<TripPlan>) planMgr.mList;
+
+        if(list.isEmpty()){
             locationDetail="미정";
             dateDuration="미정";
             return;
         }
         // 메인 화면 일정 순으로 정렬 (여행 추가에 일정을 입력 하는 창을 만들었다는 가정하에 만들어서 오류가 발생할 수 있음)
-        ArrayList<TripPlan> list = (ArrayList<TripPlan>) planMgr.mList;
+        
 
         for(int i = 0; i < list.size()-1; i ++){
             for(int j = 0; j < list.size()-1-i; j ++){
@@ -87,14 +105,14 @@ public class Trip implements Manageable,UIData {
                 long date1; 
                 long date2;
 
-                if(s1.contains("?")){
+                if(s1.contains("?")|| !isAllDigit(s1)){
                     date1 = Long.MAX_VALUE;
                 }
                 else{
                     date1 = Long.parseLong(s1);
                 }
 
-                if(s2.contains("?")){
+                if(s2.contains("?")||!isAllDigit(s2)){
                     date2 = Long.MAX_VALUE;
                 }
                 else{
@@ -169,6 +187,9 @@ public class Trip implements Manageable,UIData {
         buff.insert(2,'/');
         target=buff.toString();
         return target;
+    }
+    public String getImagePath() {
+        return imagePath;
     }
 
 

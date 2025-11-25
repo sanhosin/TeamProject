@@ -1,6 +1,8 @@
 package main.java.GUImain;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Scanner;
 import javax.swing.*;
 import main.java.domain.TestDataManage;
@@ -35,13 +37,14 @@ public class Main {
         joinPanel = new JoinPane(root, card);
         //TravelSearchPane을 여행별로 다르게 나타내기 위해 참조를 넘겨줍니다.
         mainPanel.setTravelSearchPanel(travelSearchPanel);
+        loginPanel.getMainPane(mainPanel);
        
         createAndShowGUI();
     }
 
 
     void createAndShowGUI() {
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setMinimumSize(new Dimension(800, 600));
         frame.getContentPane().add(root);
         frame.getContentPane().setBackground(new Color(220, 235, 255));
@@ -57,6 +60,18 @@ public class Main {
 
         frame.pack();
         frame.setLocationRelativeTo(null);
+        // 윈도우 닫힐 때 파일 저장
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e){
+                tdm.saveUserData();
+                if(tdm.getLoginedUser()!=null)
+                    tdm.saveTripData(tdm.getLoginedUser().getID());
+
+                frame.dispose();
+                System.exit(0);
+            }
+        });
         frame.setVisible(true); // 프레임을 보이게 합니다. [cite: 1664, 1720]
     }
 
