@@ -2,6 +2,7 @@ package main.java.GUImain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.*;
@@ -10,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 
 public class AddTripDialog extends JDialog {
@@ -18,13 +21,18 @@ public class AddTripDialog extends JDialog {
     private final Color MAIN_BLUE = new Color(90, 80, 255);
     private final Color LIGHT_GRAY = new Color(220, 220, 220);
     private final Color TITLE_COLOR = new Color(40, 60, 90);
+    private final Color TEXT_GRAY = new Color(150, 150, 150);
+    private final String PLACEHOLDER_TEXT = "여행 제목을 입력하세요";
 
     private JTextField titleField;
     private MainPane mainPane;
+    private JPanel imageUploadPanel;
+    private JPanel initialUploadContent;
 
-    // 이미지 경로 및 라벨
-    private String selectedImagePath = null;
     private JLabel imagePreviewLabel;
+
+    // 이미지 경로
+    private String selectedImagePath = null;
 
     public AddTripDialog(Frame owner, String fontName, MainPane mainPane) {
         super(owner, true);
@@ -87,8 +95,9 @@ public class AddTripDialog extends JDialog {
         titleLabel.setBorder(new EmptyBorder(0, 0, 5, 0));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        titleField = new JTextField("여행 제목을 입력하세요");
+        titleField = new JTextField(PLACEHOLDER_TEXT);
         titleField.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
+        titleField.setForeground(TEXT_GRAY);
         titleField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(LIGHT_GRAY, 1, true),
                 new EmptyBorder(8, 10, 8, 10)
@@ -96,13 +105,32 @@ public class AddTripDialog extends JDialog {
         titleField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         titleField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // 플레이스 홀더 기능
+        titleField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (titleField.getText().equals(PLACEHOLDER_TEXT)) {
+                    titleField.setText("");
+                    titleField.setForeground(TITLE_COLOR);
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (titleField.getText().isEmpty()) {
+                    titleField.setText(PLACEHOLDER_TEXT);
+                    titleField.setForeground(TEXT_GRAY);
+                }
+            }
+        });
+        // -----------------------------------------------------
+
         // 2. 사진 추가 (업로드 영역)
         JLabel photoLabel = new JLabel("사진 추가");
         photoLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 14));
         photoLabel.setBorder(new EmptyBorder(15, 0, 5, 0));
         photoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JPanel imageUploadPanel = buildImageUploadArea();
+        imageUploadPanel = buildImageUploadArea();
         imageUploadPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         imageUploadPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
@@ -116,27 +144,40 @@ public class AddTripDialog extends JDialog {
     }
 
     private JPanel buildImageUploadArea() {
-        final JPanel panel = new JPanel(new GridBagLayout());
+        final JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
-        panel.setBorder(BorderFactory.createDashedBorder(LIGHT_GRAY, 2, 4, 2, true));
+        panel.setBorder(BorderFactory.createDashedBorder(TEXT_GRAY, 2, 4, 2, true));
         panel.setPreferredSize(new Dimension(340, 150));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // 초기 업로드 안내 콘텐츠
+        initialUploadContent = new JPanel(new GridBagLayout());
+        initialUploadContent.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; gbc.gridy = 0; gbc.insets = new Insets(0, 0, 5, 0);
 
         JLabel icon = new JLabel("⬆");
         icon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 30));
-        icon.setForeground(LIGHT_GRAY);
-        panel.add(icon, gbc);
+        icon.setForeground(TEXT_GRAY);
+        initialUploadContent.add(icon, gbc);
 
         gbc.gridy = 1;
         JLabel text = new JLabel("클릭하여 이미지 업로드");
         text.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
-        text.setForeground(LIGHT_GRAY);
-        panel.add(text, gbc);
+        text.setForeground(TEXT_GRAY);
+        initialUploadContent.add(text, gbc);
 
-        // 클릭시 컴퓨터에서 이미지 찾아서 업로드 
+        panel.add(initialUploadContent, BorderLayout.CENTER);
+
+        // 이미지 미리보기 라벨 초기화
+        imagePreviewLabel = new JLabel();
+        imagePreviewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imagePreviewLabel.setVisible(false);
+        panel.add(imagePreviewLabel, BorderLayout.CENTER);
+
+
+        // 클릭시 컴퓨터에서 이미지 찾아서 업로드
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -145,28 +186,28 @@ public class AddTripDialog extends JDialog {
                 String userHome = System.getProperty("user.home");
                 File Img_File = new File(userHome, "OneDrive/사진");
                 fileChooser.setCurrentDirectory(Img_File);
-        
+
                 fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "png", "jpeg", "gif"));
 
                 if (fileChooser.showOpenDialog(AddTripDialog.this) == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     selectedImagePath = selectedFile.getAbsolutePath();
 
-                    // 화면 갱신 로직을 여기에 직접 작성
-                    panel.removeAll(); 
-                    
+                    panel.removeAll();
+
                     ImageIcon icon = new ImageIcon(selectedImagePath);
-                    Image img = icon.getImage().getScaledInstance(340, 150, Image.SCALE_SMOOTH);
-                    JLabel imgLabel = new JLabel(new ImageIcon(img));
-                    
-                    panel.add(imgLabel);
+                    Image img = icon.getImage().getScaledInstance(panel.getWidth(), panel.getHeight(), Image.SCALE_SMOOTH);
+
+                    imagePreviewLabel.setIcon(new ImageIcon(img));
+                    imagePreviewLabel.setVisible(true);
+                    initialUploadContent.setVisible(false);
+
                     panel.revalidate();
                     panel.repaint();
                 }
             }
         });
 
-        panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         return panel;
     }
@@ -196,16 +237,24 @@ public class AddTripDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String title = titleField.getText().trim();
-                
-                if (title.isEmpty() || title.equals("여행 제목을 입력하세요")) {
+
+                if (title.isEmpty() || title.equals(PLACEHOLDER_TEXT)) {
                     JOptionPane.showMessageDialog(AddTripDialog.this, "여행 제목을 입력해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                Object[] uidata = { title, selectedImagePath };
 
-               // 삭제 :  String imagePath=null; //이미지 경로 입력되도록 수정
-                Main.tdm.addTrip(uidata);
-                mainPane.refreshTripListUI();
+                MainPane.DestinationItem newTrip = new MainPane.DestinationItem(
+                        title,
+                        "위치 미정",
+                        "새로 추가된 여행",
+                        0.0,
+                        selectedImagePath != null ? selectedImagePath : "default.jpg",
+                        "미정",
+                        "미정",
+                        new String[]{"계획 중"}
+                );
+
+                mainPane.addTrip(newTrip);
                 dispose();
             }
         });

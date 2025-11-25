@@ -1,6 +1,5 @@
 package main.java.GUImain;
 
-import main.java.domain.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -10,9 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 import java.awt.image.BufferedImage;
-import java.io.File;
+
 
 public class MainPane extends JPanel {
 
@@ -27,13 +25,57 @@ public class MainPane extends JPanel {
     private final Color TITLE_COLOR = new Color(40, 60, 90);
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
 
-    private TravelSearchPane travelSearchPanel;
-    private JPanel listContainer;
-    private JScrollPane scrollPane;
-    private JPanel scheduleCardContainer;
-    private JPanel scheduleEmptyMessagePanel;
-    private JPanel scheduleListAreaCard;
+    private JPanel mainPanel;
+    private JPanel contentPanel;
+    private JPanel sidebar;
+    private boolean isSidebarVisible = false;
+    private final int SLIDE_WIDTH = 180;
+    private final int ANIMATION_STEPS = 20;
+    private final int ANIMATION_DELAY_MS = 20;
 
+    public static class ScheduleItem {
+        String title;
+        String date;
+        String time;
+        String location;
+        String description;
+        Color color;
+
+        public ScheduleItem(String title, String date, String time, String location, String description, Color color) {
+            this.title = title;
+            this.date = date;
+            this.time = time;
+            this.location = location;
+            this.description = description;
+            this.color = color;
+        }
+    }
+
+    public static class DestinationItem {
+        String name;
+        String country;
+        String description;
+        double rating;
+        String imagePath;
+        String startDate;
+        String endDate;
+        String[] tags;
+
+        public DestinationItem(String name, String country, String description, double rating, String imagePath, String startDate, String endDate, String[] tags) {
+            this.name = name;
+            this.country = country;
+            this.description = description;
+            this.rating = rating;
+            this.imagePath = imagePath;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.tags = tags;
+        }
+    }
+
+    private List<DestinationItem> tripList = new ArrayList<>();
+    private JPanel listContainer;
+    private TravelSearchPane travelSearchPanelRef;
 
     public MainPane(JPanel root, CardLayout card) {
         this.root = root;
@@ -41,11 +83,12 @@ public class MainPane extends JPanel {
         setLayout(new BorderLayout());
         setBackground(BG_COLOR);
 
-        add(setupMainPanel(), BorderLayout.CENTER);
+        mainPanel = setupMainPanel();
+        add(mainPanel, BorderLayout.CENTER);
     }
 
-    public void setTravelSearchPanel(TravelSearchPane travelSearchPanel){
-        this.travelSearchPanel=travelSearchPanel;
+    public void setTravelSearchPanel(TravelSearchPane travelSearchPanel) {
+        this.travelSearchPanelRef = travelSearchPanel;
     }
 
     public JPanel setupMainPanel() {
@@ -55,28 +98,107 @@ public class MainPane extends JPanel {
         JPanel header = buildHeader();
         header.setBackground(Color.WHITE);
 
+        contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false);
+
+        sidebar = buildSidebar();
+        sidebar.setPreferredSize(new Dimension(0, 0));
+
         JPanel center = buildTripListArea();
 
+        contentPanel.add(sidebar, BorderLayout.WEST);
+        contentPanel.add(center, BorderLayout.CENTER);
+
         panel.add(header, BorderLayout.NORTH);
-        panel.add(center, BorderLayout.CENTER);
+        panel.add(contentPanel, BorderLayout.CENTER);
 
         return panel;
     }
 
-    
-    public void refreshTripListUI() {
-        if (listContainer == null) return;
+    private void toggleSidebar() {
+        final int targetWidth = isSidebarVisible ? 0 : SLIDE_WIDTH;
+        final int startWidth = sidebar.getPreferredSize().width;
+        final int delta = (targetWidth - startWidth) / ANIMATION_STEPS;
 
-        listContainer.removeAll();
+        Timer timer = new Timer(ANIMATION_DELAY_MS, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int currentWidth = sidebar.getPreferredSize().width;
+                int newWidth = currentWidth + delta;
 
-        List<Trip> tripList = Main.tdm.getTripList();
+                boolean shouldStop = (delta > 0 && newWidth >= targetWidth) || (delta < 0 && newWidth <= targetWidth);
 
-        if(tripList != null) {
-            for (Trip t : tripList) {
-                listContainer.add(buildTripCard(t));
-                // 카드 사이 간격 15픽셀
-                listContainer.add(Box.createVerticalStrut(15));
+                if (shouldStop) {
+                    newWidth = targetWidth;
+                    ((Timer)e.getSource()).stop();
+                    isSidebarVisible = !isSidebarVisible;
+                }
+
+                sidebar.setPreferredSize(new Dimension(newWidth, sidebar.getHeight()));
+                contentPanel.revalidate();
             }
+        });
+
+        if (timer.isRunning()) {
+            timer.stop();
+        }
+        timer.start();
+    }
+
+    private JPanel buildSidebar() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(30, 20, 50, 20));
+
+        panel.setOpaque(true);
+        panel.setBackground(CARD_COLOR);
+
+        Font sideFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 14);
+
+        panel.add(sidebarItem("👤", "친구 관리", sideFont));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(sidebarItem("🗓", "일정 관리", sideFont));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(sidebarItem("⚙", "유저 정보", sideFont));
+
+        panel.add(Box.createVerticalGlue());
+
+        return panel;
+    }
+
+    private JPanel sidebarItem(String icon, String text, Font font) {
+        JPanel itemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        itemPanel.setOpaque(false);
+
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 18));
+        iconLabel.setForeground(TITLE_COLOR);
+
+        JLabel textLabel = new JLabel(text);
+        textLabel.setFont(font);
+        textLabel.setForeground(TITLE_COLOR);
+
+        itemPanel.add(iconLabel);
+        itemPanel.add(textLabel);
+
+        return itemPanel;
+    }
+
+
+    public void addTrip(DestinationItem item) {
+        tripList.add(item);
+        refreshTripListUI();
+    }
+
+    public void addScheduleItem(ScheduleItem item) {
+        refreshTripListUI();
+    }
+
+    public void refreshTripListUI() {
+        listContainer.removeAll();
+        for (DestinationItem item : tripList) {
+            listContainer.add(buildTripCard(item));
+            listContainer.add(Box.createVerticalStrut(15));
         }
         listContainer.revalidate();
         listContainer.repaint();
@@ -96,7 +218,7 @@ public class MainPane extends JPanel {
         menuIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // 사이드바 토글 로직
+                toggleSidebar();
             }
         });
 
@@ -115,13 +237,10 @@ public class MainPane extends JPanel {
         addBtn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         addBtn.setPreferredSize(new Dimension(150, 40));
 
-        addBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(MainPane.this);
-                AddTripDialog dialog = new AddTripDialog(parentFrame, CUSTOM_FONT_NAME, MainPane.this);
-                dialog.setVisible(true);
-            }
+        addBtn.addActionListener(e -> {
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            AddTripDialog dialog = new AddTripDialog(parentFrame, CUSTOM_FONT_NAME, this);
+            dialog.setVisible(true);
         });
 
 
@@ -147,10 +266,7 @@ public class MainPane extends JPanel {
         listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
         listContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        if(Main.tdm.getLoginedUser()!=null){
-            //loginedUser가 null일때 메인화면에 경고창 띄우는 기능 구현
-            refreshTripListUI();
-        }
+        refreshTripListUI();
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -164,14 +280,22 @@ public class MainPane extends JPanel {
         return panel;
     }
 
-    private JPanel buildTripCard(Trip t) {
+    private JPanel buildTripCard(DestinationItem item) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
-        card.setPreferredSize(new Dimension(800, 100));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100)); //카드 높이 고정
+
+        final int CARD_HEIGHT = 150;
+        final int IMAGE_WIDTH = 200;
+        final int IMAGE_HEIGHT = 40;
+        final int CARD_INNER_MARGIN = 12;
+
+        // 최대 크기 설정으로 늘어남 방지 (세로 고정)
+        card.setPreferredSize(new Dimension(1000, CARD_HEIGHT));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, CARD_HEIGHT));
+
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(10, 10, 10, 10)
+                new EmptyBorder(CARD_INNER_MARGIN, 10, CARD_INNER_MARGIN, 10)
         ));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -179,79 +303,94 @@ public class MainPane extends JPanel {
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Main.tdm.setCurrentTrip(t);
-                travelSearchPanel.setTravelSearchPaneTitle();
-                travelSearchPanel.refreshPlanListUI();
+
+                Main.tdm.setCurrentTrip(item);
+
                 MainPane.this.card.show(root, "여행지 검색");
+
+                if (travelSearchPanelRef != null) {
+                    travelSearchPanelRef.setTravelSearchPaneTitle();
+                    travelSearchPanelRef.refreshPlanListUI();
+                }
             }
         });
 
-        Object[] uidata = t.getUidata();
-        String tripTitle = (String)uidata[Trip.TRIP_TITLE];
-        String tripImgPath = (String)uidata[Trip.TRIP_IMG];
-
-        // 1. 데이터가 제대로 넘어오는지 확인
-        System.out.println("---------------------------------");
-        System.out.println("여행 제목: " + tripTitle);
-        
-        if(uidata.length > 1) {
-            System.out.println("이미지 경로 확인: " + tripImgPath); // 경로가 null인지 여기서 확인 가능
-        } else {
-            System.out.println("경고: 이미지 정보가 없습니다!");
-        }
-
-        // 1. 좌측 이미지 영역
         JPanel imagePanel = new JPanel(new BorderLayout());
-        imagePanel.setPreferredSize(new Dimension(100, 80));
+        imagePanel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
         imagePanel.setBackground(new Color(220, 220, 220));
 
         JLabel imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(100, 80));
-        // 경로랑 파일이 존재하면 이미지 띄우기
-        if (tripImgPath != null && !tripImgPath.isEmpty()) {
-            File imgFile = new File(tripImgPath);
-            
-            if (imgFile.exists()) {
-                // 파일이 있으면 로드
-                ImageIcon icon = new ImageIcon(tripImgPath);
-                Image img = icon.getImage();
-                Image scaledImg = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
-                imageLabel.setIcon(new ImageIcon(scaledImg));
-                System.out.println("-> 이미지 로드 성공!");
-            } 
-        } 
+        imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
+
+        if (item.imagePath != null && !item.imagePath.equals("default.jpg")) {
+            try {
+                ImageIcon originalIcon = new ImageIcon(item.imagePath);
+                Image originalImage = originalIcon.getImage();
+                Image scaledImage = originalImage.getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(scaledImage));
+            } catch (Exception ex) {
+                // 이미지 로드 실패 시 빈 상태 유지
+            }
+        }
+
 
         imagePanel.add(imageLabel, BorderLayout.CENTER);
+
         card.add(imagePanel, BorderLayout.WEST);
 
-        // 2. 중앙 텍스트 영역
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel((String)uidata[Trip.TRIP_TITLE]);
-        nameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 16));
+        textPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
+
+        JLabel nameLabel = new JLabel(item.name);
+        nameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 14));
         nameLabel.setForeground(TITLE_COLOR);
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        String toLocationLabel=(t.getPlanList().isEmpty())?"미정":t.getLocationDetail();
-        JLabel locationLabel = new JLabel("📍 " + toLocationLabel);
-        locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
+        JLabel locationLabel = new JLabel("📍 " + item.country);
+        locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 10));
         locationLabel.setForeground(new Color(90, 90, 110));
         locationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        String toDateLabel=(t.getPlanList().isEmpty())?"미정":t.getDateDuration();
-        JLabel dateLabel = new JLabel(toDateLabel);
-        dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
+        String dateRange = item.endDate.isEmpty() || item.startDate.equals(item.endDate) ? item.startDate : item.startDate + " - " + item.endDate;
+        JLabel dateLabel = new JLabel(dateRange);
+        dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 10));
         dateLabel.setForeground(new Color(90, 90, 110));
         dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         textPanel.add(nameLabel);
-        textPanel.add(Box.createVerticalStrut(5));
+        textPanel.add(Box.createVerticalStrut(2));
         textPanel.add(locationLabel);
+        textPanel.add(Box.createVerticalStrut(2));
         textPanel.add(dateLabel);
 
         card.add(textPanel, BorderLayout.CENTER);
+
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        controlPanel.setOpaque(false);
+
+        JButton deleteBtn = new JButton("🗑");
+        deleteBtn.setFocusPainted(false);
+        deleteBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        deleteBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    MainPane.this.root.getParent(),
+                    item.name + " 여행을 정말 삭제하시겠습니까?",
+                    "여행 삭제 확인",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                tripList.remove(item);
+                refreshTripListUI();
+            }
+        });
+
+        controlPanel.add(deleteBtn);
+        card.add(controlPanel, BorderLayout.EAST);
 
         return card;
     }

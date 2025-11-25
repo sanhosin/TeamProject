@@ -8,6 +8,7 @@ import java.util.List;
 
 import main.java.mgr.Factory;
 import main.java.mgr.Manager;
+import main.java.GUImain.MainPane;
 
 public class TestDataManage {
     public static User loginedUser=null;
@@ -121,6 +122,10 @@ public class TestDataManage {
         currentTrip=t;
     }
 
+    public void setCurrentTrip(MainPane.DestinationItem item) {
+        Trip newTrip = new Trip();
+        currentTrip = newTrip;
+    }
 
     public void addPlan(Object[] uiData) {
         currentTrip.addPlan(uiData);
