@@ -28,20 +28,19 @@ public class Main {
 
     // JPanel searchPanel, schedulePanel; // 사용되지 않아 제거
 
-    void mymain(){
+    void mymain() {
         // 1. MainPane을 먼저 인스턴스화합니다.
         mainPanel = new MainPane(root, card);
         // 2. TravelSearchPane을 인스턴스화할 때, mainPanel의 참조를 넘겨줍니다.
         travelSearchPanel = new TravelSearchPane(root, card, mainPanel);
         // 3. JoinPane 인스턴스 생성
         joinPanel = new JoinPane(root, card);
-        //TravelSearchPane을 여행별로 다르게 나타내기 위해 참조를 넘겨줍니다.
+        // TravelSearchPane을 여행별로 다르게 나타내기 위해 참조를 넘겨줍니다.
         mainPanel.setTravelSearchPanel(travelSearchPanel);
         loginPanel.getMainPane(mainPanel);
-       
+
         createAndShowGUI();
     }
-
 
     void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -63,9 +62,9 @@ public class Main {
         // 윈도우 닫힐 때 파일 저장
         frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e){
+            public void windowClosing(WindowEvent e) {
                 tdm.saveUserData();
-                if(tdm.getLoginedUser()!=null)
+                if (tdm.getLoginedUser() != null)
                     tdm.saveTripData(tdm.getLoginedUser().getID());
 
                 frame.dispose();

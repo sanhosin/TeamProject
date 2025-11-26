@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.image.BufferedImage;
 
-
 public class MainPane extends JPanel {
 
     JPanel root;
@@ -92,7 +91,7 @@ public class MainPane extends JPanel {
 
                 if (shouldStop) {
                     newWidth = targetWidth;
-                    ((Timer)e.getSource()).stop();
+                    ((Timer) e.getSource()).stop();
                     isSidebarVisible = !isSidebarVisible;
                 }
 
@@ -117,30 +116,35 @@ public class MainPane extends JPanel {
 
         Font sideFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 14);
 
-        panel.add(sidebarItem("👤", "친구 관리", sideFont));
+        panel.add(sidebarItem("TripPlanner/src/main/resources/images/gachi.png", "친구 관리", sideFont));
         panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem("🗓", "일정 관리", sideFont));
+        panel.add(sidebarItem("TripPlanner/src/main/resources/images/dal2.png", "일정 관리", sideFont));
         panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem("⚙", "유저 정보", sideFont));
+        panel.add(sidebarItem("TripPlanner/src/main/resources/images/honja.png", "유저 정보", sideFont));
 
         panel.add(Box.createVerticalGlue());
 
         return panel;
     }
 
+    // >>수정 : 아미지 삽입
     private JPanel sidebarItem(String icon, String text, Font font) {
         JPanel itemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         itemPanel.setOpaque(false);
 
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 18));
-        iconLabel.setForeground(TITLE_COLOR);
+        JPanel iconBox = new JPanel(new GridBagLayout());
+        iconBox.setPreferredSize(new Dimension(24, 24));
+        iconBox.setOpaque(false);
+
+        ImageIcon raw = new ImageIcon(icon); // ← 첫 번째 파라미터를 이미지 경로로 사용
+
+        iconBox.add(new JLabel(new ImageIcon(raw.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH))));
 
         JLabel textLabel = new JLabel(text);
         textLabel.setFont(font);
         textLabel.setForeground(TITLE_COLOR);
 
-        itemPanel.add(iconLabel);
+        itemPanel.add(iconBox);
         itemPanel.add(textLabel);
 
         return itemPanel;
@@ -172,14 +176,22 @@ public class MainPane extends JPanel {
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftPanel.setOpaque(false);
 
-        JLabel menuIcon = new JLabel("☰");
-        menuIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
-        menuIcon.setForeground(TITLE_COLOR);
+        // 수정>> 이미지삽입
+        JPanel menuBox = new JPanel(new GridBagLayout()); // 가운데 정렬용
+        menuBox.setPreferredSize(new Dimension(40, 40)); // 직사각형 크기
+        menuBox.setOpaque(false); // 배경 투명
 
-        menuIcon.addMouseListener(new MouseAdapter() {
+        ImageIcon headerRaw = new ImageIcon("TripPlanner/src/main/resources/images/menu.png");
+        Image headerImg = headerRaw.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        JLabel menuIcon = new JLabel(new ImageIcon(headerImg));
+
+        menuBox.add(menuIcon);
+
+        menuBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 toggleSidebar();
+                menuBox.add(menuBox);
             }
         });
 
@@ -187,7 +199,7 @@ public class MainPane extends JPanel {
         title.setForeground(TITLE_COLOR);
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
 
-        leftPanel.add(menuIcon);
+        leftPanel.add(menuBox);
         leftPanel.add(title);
 
         JButton addBtn = new JButton("여행추가");
@@ -204,7 +216,6 @@ public class MainPane extends JPanel {
             dialog.setVisible(true);
         });
 
-
         panel.add(leftPanel, BorderLayout.WEST);
         panel.add(addBtn, BorderLayout.EAST);
 
@@ -217,10 +228,16 @@ public class MainPane extends JPanel {
         panel.setOpaque(false);
         panel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        JLabel listTitle = new JLabel("✈ 나의 여행");
-        listTitle.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 20));
-        listTitle.setForeground(TITLE_COLOR);
-        listTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // 수정>> 나의여행
+        ImageIcon rawIcon2 = new ImageIcon("TripPlanner/src/main/resources/images/dal1.png");
+        Image img2 = rawIcon2.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+        ImageIcon icon2 = new ImageIcon(img2);
+
+        JLabel myTripTitle = new JLabel("나의 여행"); // ← 앞에 공백만 남기기
+        myTripTitle.setIcon(icon2);
+        myTripTitle.setIconTextGap(10);
+        myTripTitle.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 28));
+        myTripTitle.setForeground(new Color(40, 60, 90));
 
         listContainer = new JPanel();
         listContainer.setOpaque(false);
@@ -232,7 +249,7 @@ public class MainPane extends JPanel {
         scrollPane.getViewport().setBackground(BG_COLOR);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        panel.add(listTitle);
+        panel.add(myTripTitle);
         panel.add(Box.createVerticalStrut(20));
         panel.add(scrollPane);
 
@@ -254,8 +271,7 @@ public class MainPane extends JPanel {
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(CARD_INNER_MARGIN, 10, CARD_INNER_MARGIN, 10)
-        ));
+                new EmptyBorder(CARD_INNER_MARGIN, 10, CARD_INNER_MARGIN, 10)));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -292,7 +308,6 @@ public class MainPane extends JPanel {
                 // 이미지 로드 실패 시 빈 상태 유지
             }
         }
-
 
         imagePanel.add(imageLabel, BorderLayout.CENTER);
 
@@ -341,8 +356,7 @@ public class MainPane extends JPanel {
                     tripTitle + " 여행을 정말 삭제하시겠습니까?",
                     "여행 삭제 확인",
                     JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
 
             if (confirm == JOptionPane.YES_OPTION) {
                 Main.tdm.deleteTrip(t);

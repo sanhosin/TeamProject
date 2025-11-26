@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.FocusManager;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import main.java.domain.User;
 
@@ -50,9 +51,12 @@ public class LoginPane extends JPanel{
                 BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
                 BorderFactory.createEmptyBorder(40, 40, 40, 40)));
 
-        JLabel icon = new JLabel("✈", SwingConstants.CENTER);
-        icon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 40));
-        icon.setForeground(MAIN_BLUE);
+        // 수정>> 여행가요 이미지 삽입
+        ImageIcon rawIcon = new ImageIcon("TripPlanner/src/main/resources/images/logo.png");
+        Image scaledImage = rawIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        JLabel icon = new JLabel(scaledIcon);
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel title = new JLabel("여행가요", SwingConstants.CENTER);
@@ -93,7 +97,7 @@ public class LoginPane extends JPanel{
                 Main.tdm.setLoginedUser(loginedUser);
                 Main.tdm.readData();
                 mainpanel.refreshTripListUI();
-                
+
                 card.show(root, "메인");
             }
         });
@@ -110,7 +114,6 @@ public class LoginPane extends JPanel{
         joinBtn.addActionListener(e -> {
             card.show(root, "회원가입");
         });
-
 
         panel.add(icon);
         panel.add(title);
@@ -140,8 +143,8 @@ public class LoginPane extends JPanel{
         field.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
     }
 
-    public void getMainPane(MainPane mainpanel){
-        this.mainpanel=mainpanel;
+    public void getMainPane(MainPane mainpanel) {
+        this.mainpanel = mainpanel;
     }
 
     class PlaceholderTextField extends JTextField {

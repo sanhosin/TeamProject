@@ -4,7 +4,13 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "main.java.GUImain.Main",
+            "projectName": "TeamProject_3be31c8c"
+        },
         {
             "type": "java",
             "request": "launch",
