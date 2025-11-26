@@ -1,11 +1,14 @@
 package main.java.GUImain;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import main.java.domain.User;
 
-public class LoginPane extends JPanel {
+public class LoginPane extends JPanel{
     JPanel root;
     CardLayout card;
     JPanel loginPanel;
@@ -190,4 +193,6 @@ public class LoginPane extends JPanel {
             setEchoChar('*');
         }
     }
+
+    
 }

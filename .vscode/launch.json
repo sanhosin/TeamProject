@@ -6,7 +6,7 @@
     "configurations": [
         
         {
-            "type": "jdk",
+            "type": "java",
             "request": "launch",
             "name": "Launch Java App"
         }

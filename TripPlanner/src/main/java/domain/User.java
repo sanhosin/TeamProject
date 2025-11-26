@@ -56,6 +56,9 @@ public class User implements Manageable,UIData{
         return tripMgr.mList;
     }
 
+    public void deleteTrip(Trip t) {
+        tripMgr.mList.remove(t);  // 정상적으로 삭제
+    }
     @Override
     public void set(Object[] uidata) {
         id=(String)uidata[0];

@@ -42,8 +42,8 @@ public class ScheduleAddDialog extends JDialog {
     private String dialogTitle;
 
     private final String PLACEHOLDER_TITLE = "일정 제목을 입력하세요";
-    private final String PLACEHOLDER_DATE = "2025-11-15"; // 이미지처럼 연도-월-일만 남김
-    private final String PLACEHOLDER_TIME = "예: 10:00";
+    private final String PLACEHOLDER_DATE = "25/11/15"; // 이미지처럼 연도-월-일만 남김
+    private final String PLACEHOLDER_TIME = "10:00";
     private final String PLACEHOLDER_LOCATION = "위치를 입력하세요";
     private final String PLACEHOLDER_DESCRIPTION = "설명을 입력하세요";
 
@@ -215,7 +215,7 @@ public class ScheduleAddDialog extends JDialog {
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // 1. 연도-월-일
-        JLabel dateLabel = buildSection("연도-월-일");
+        JLabel dateLabel = buildSection("일정 시간");
         panel.add(dateLabel);
         panel.add(Box.createVerticalStrut(5));
 
@@ -247,12 +247,11 @@ public class ScheduleAddDialog extends JDialog {
         gbc.gridx = 1;
         gbc.weightx = 0.0;
         gbc.insets = new Insets(0, 0, 0, 5);
-        JLabel timeLabelText = buildSection("시간");
+        JLabel timeLabelText = buildSection("");
 
-        timeLabelText.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
-        timeLabelText.setPreferredSize(new Dimension(45, 35));
-        timeLabelText.setMaximumSize(new Dimension(45, 35));
-        timeLabelText.setForeground(TEXT_GRAY);
+        // timeLabelText.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
+        timeLabelText.setPreferredSize(new Dimension(15, 35));
+        timeLabelText.setMaximumSize(new Dimension(15, 35));
         timeLabelText.setHorizontalAlignment(SwingConstants.RIGHT); // 우측 정렬
         timeLabelText.setVerticalAlignment(SwingConstants.CENTER);
         customRow.add(timeLabelText, gbc);

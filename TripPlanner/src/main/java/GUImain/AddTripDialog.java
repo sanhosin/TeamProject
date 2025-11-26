@@ -242,19 +242,10 @@ public class AddTripDialog extends JDialog {
                     JOptionPane.showMessageDialog(AddTripDialog.this, "여행 제목을 입력해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
+                Object[] uidata = { title, selectedImagePath };
 
-                MainPane.DestinationItem newTrip = new MainPane.DestinationItem(
-                        title,
-                        "위치 미정",
-                        "새로 추가된 여행",
-                        0.0,
-                        selectedImagePath != null ? selectedImagePath : "default.jpg",
-                        "미정",
-                        "미정",
-                        new String[]{"계획 중"}
-                );
-
-                mainPane.addTrip(newTrip);
+                Main.tdm.addTrip(uidata);
+                mainPane.refreshTripListUI();
                 dispose();
             }
         });

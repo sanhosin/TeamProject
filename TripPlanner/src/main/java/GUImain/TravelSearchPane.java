@@ -208,16 +208,16 @@ public class TravelSearchPane extends JPanel {
             }
         });
 
-        JLabel menuIcon = new JLabel("☰");
-        menuIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
-        menuIcon.setForeground(TITLE_COLOR);
+        // JLabel menuIcon = new JLabel("☰");
+        // menuIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
+        // menuIcon.setForeground(TITLE_COLOR);
 
-        menuIcon.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                toggleSidebar();
-            }
-        });
+        // menuIcon.addMouseListener(new MouseAdapter() {
+        //     @Override
+        //     public void mouseClicked(MouseEvent e) {
+        //         toggleSidebar();
+        //     }
+        // });
 
 
         JLabel title = new JLabel("여행가요");
@@ -225,7 +225,7 @@ public class TravelSearchPane extends JPanel {
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
 
         leftPanel.add(backIcon);
-        leftPanel.add(menuIcon);
+        //leftPanel.add(menuIcon);
         leftPanel.add(title);
 
         JButton addScheduleBtn = new JButton("+ 일정 추가");

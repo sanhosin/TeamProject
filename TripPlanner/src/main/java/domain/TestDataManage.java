@@ -11,8 +11,8 @@ import main.java.mgr.Manager;
 import main.java.GUImain.MainPane;
 
 public class TestDataManage {
-    public static User loginedUser=null;
-    public static Trip currentTrip=null;
+    User loginedUser=null;
+    Trip currentTrip=null;
     public static Manager<User> userMgr=new Manager<>();
 
     public TestDataManage() {
@@ -117,15 +117,14 @@ public class TestDataManage {
         return loginedUser.getTripList();
     }
 
+    public void deleteTrip(Trip t){
+        loginedUser.deleteTrip(t);
+    }
 
     public void setCurrentTrip(Trip t) {
         currentTrip=t;
     }
 
-    public void setCurrentTrip(MainPane.DestinationItem item) {
-        Trip newTrip = new Trip();
-        currentTrip = newTrip;
-    }
 
     public void addPlan(Object[] uiData) {
         currentTrip.addPlan(uiData);
