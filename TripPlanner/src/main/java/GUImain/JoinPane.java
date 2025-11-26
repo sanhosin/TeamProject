@@ -49,8 +49,7 @@ public class JoinPane extends JPanel {
         // 카드 외곽 스타일 적용
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
-                BorderFactory.createEmptyBorder(40, 40, 40, 40)
-        ));
+                BorderFactory.createEmptyBorder(40, 40, 40, 40)));
 
         JLabel title = new JLabel("회원가입", SwingConstants.CENTER);
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 24));
@@ -95,20 +94,19 @@ public class JoinPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 실제 회원가입 로직 (데이터 저장)을 여기에 추가합니다.
-                String id=idField.getText();
-                String pwd=new String(pwField.getPassword());
-                String nickname=nicknameField.getText();
-                Object[] uidata={id,pwd,nickname};
-                if(id.equals("")||pwd.equals("")||nickname.equals("")){
+                String id = idField.getText();
+                String pwd = new String(pwField.getPassword());
+                String nickname = nicknameField.getText();
+                Object[] uidata = { id, pwd, nickname };
+                if (id.equals("") || pwd.equals("") || nickname.equals("")) {
                     System.out.println("모두 입력해주세요.");
                     return;
                 }
 
-                if(Main.tdm.isExistUserID(id)){
-                    //여기에 아이디 중복 경고 메시지 출력 부분 추가
+                if (Main.tdm.isExistUserID(id)) {
+                    // 여기에 아이디 중복 경고 메시지 출력 부분 추가
                     System.out.println("존재하는 아이디 입니다!");
-                }
-                else{
+                } else {
                     Main.tdm.addUser(uidata);
                     card.show(root, "로그인"); // 성공 시 로그인 화면으로 복귀
                 }
@@ -159,8 +157,7 @@ public class JoinPane extends JPanel {
         field.setMaximumSize(new Dimension(310, 40));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         field.setBackground(INPUT_BG);
         field.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
     }

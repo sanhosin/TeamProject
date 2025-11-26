@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-
 public class AddTripDialog extends JDialog {
 
     private final String CUSTOM_FONT_NAME = "맑은 고딕";
@@ -64,12 +63,21 @@ public class AddTripDialog extends JDialog {
         panel.setBorder(new EmptyBorder(15, 20, 15, 20));
         panel.setBackground(Color.WHITE);
 
-        JLabel title = new JLabel("새 여행 추가");
+        // >> 수정 : 이미지 삽입
+        ImageIcon rawPlane = new ImageIcon("");
+        Image planeImg = rawPlane.getImage().getScaledInstance(26, 26, Image.SCALE_SMOOTH);
+        ImageIcon planeIcon = new ImageIcon(planeImg);
+
+        JLabel title = new JLabel(" 새 여행 추가", planeIcon, SwingConstants.LEFT);
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 20));
         title.setForeground(TITLE_COLOR);
+        title.setIconTextGap(10);
 
-        JLabel closeBtn = new JLabel("❌");
-        closeBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 18));
+        // 오른쪽: 닫기 아이콘
+        ImageIcon rawClose = new ImageIcon("TripPlanner/src/main/resources/images/x.png");
+        Image closeImg = rawClose.getImage().getScaledInstance(20, 25, Image.SCALE_SMOOTH);
+        JLabel closeBtn = new JLabel(new ImageIcon(closeImg));
+
         closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -100,8 +108,7 @@ public class AddTripDialog extends JDialog {
         titleField.setForeground(TEXT_GRAY);
         titleField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(LIGHT_GRAY, 1, true),
-                new EmptyBorder(8, 10, 8, 10)
-        ));
+                new EmptyBorder(8, 10, 8, 10)));
         titleField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         titleField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -114,6 +121,7 @@ public class AddTripDialog extends JDialog {
                     titleField.setForeground(TITLE_COLOR);
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (titleField.getText().isEmpty()) {
@@ -155,11 +163,14 @@ public class AddTripDialog extends JDialog {
         initialUploadContent.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 0; gbc.insets = new Insets(0, 0, 5, 0);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 5, 0);
 
-        JLabel icon = new JLabel("⬆");
-        icon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 30));
-        icon.setForeground(TEXT_GRAY);
+        ImageIcon uploadRaw = new ImageIcon("src/main/resources/images/pol.png");
+        Image uploadImg = uploadRaw.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        JLabel icon = new JLabel(new ImageIcon(uploadImg));
+
         initialUploadContent.add(icon, gbc);
 
         gbc.gridy = 1;
@@ -170,12 +181,9 @@ public class AddTripDialog extends JDialog {
 
         panel.add(initialUploadContent, BorderLayout.CENTER);
 
-        // 이미지 미리보기 라벨 초기화
+        // 이미지 미리보기 라벨 초기화 (처음에는 panel에 안 붙여놓기)
         imagePreviewLabel = new JLabel();
         imagePreviewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imagePreviewLabel.setVisible(false);
-        panel.add(imagePreviewLabel, BorderLayout.CENTER);
-
 
         // 클릭시 컴퓨터에서 이미지 찾아서 업로드
         panel.addMouseListener(new MouseAdapter() {
@@ -196,7 +204,8 @@ public class AddTripDialog extends JDialog {
                     panel.removeAll();
 
                     ImageIcon icon = new ImageIcon(selectedImagePath);
-                    Image img = icon.getImage().getScaledInstance(panel.getWidth(), panel.getHeight(), Image.SCALE_SMOOTH);
+                    Image img = icon.getImage().getScaledInstance(panel.getWidth(), panel.getHeight(),
+                            Image.SCALE_SMOOTH);
 
                     imagePreviewLabel.setIcon(new ImageIcon(img));
                     imagePreviewLabel.setVisible(true);
@@ -207,7 +216,6 @@ public class AddTripDialog extends JDialog {
                 }
             }
         });
-
 
         return panel;
     }
@@ -239,7 +247,8 @@ public class AddTripDialog extends JDialog {
                 String title = titleField.getText().trim();
 
                 if (title.isEmpty() || title.equals(PLACEHOLDER_TEXT)) {
-                    JOptionPane.showMessageDialog(AddTripDialog.this, "여행 제목을 입력해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AddTripDialog.this, "여행 제목을 입력해주세요.", "경고",
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -251,8 +260,7 @@ public class AddTripDialog extends JDialog {
                         selectedImagePath != null ? selectedImagePath : "default.jpg",
                         "미정",
                         "미정",
-                        new String[]{"계획 중"}
-                );
+                        new String[] { "계획 중" });
 
                 mainPane.addTrip(newTrip);
                 dispose();
