@@ -42,8 +42,8 @@ public class ScheduleAddDialog extends JDialog {
     private String dialogTitle;
 
     private final String PLACEHOLDER_TITLE = "일정 제목을 입력하세요";
-    private final String PLACEHOLDER_DATE = "25/11/15"; // 이미지처럼 연도-월-일만 남김
-    private final String PLACEHOLDER_TIME = "10:00";
+    private final String PLACEHOLDER_DATE = "ex)25/11/15"; // 이미지처럼 연도-월-일만 남김
+    private final String PLACEHOLDER_TIME = "ex)10:00";
     private final String PLACEHOLDER_LOCATION = "위치를 입력하세요";
     private final String PLACEHOLDER_DESCRIPTION = "설명을 입력하세요";
 

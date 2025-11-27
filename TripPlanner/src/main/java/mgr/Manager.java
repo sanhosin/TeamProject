@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import main.java.GUImain.Main;
+
 public class Manager<T extends Manageable> {
     public ArrayList<T> mList=new ArrayList<>();
 
@@ -14,6 +16,7 @@ public class Manager<T extends Manageable> {
         Scanner filein = null;
         
         filein=openFile(filename);
+
         if(filein==null){
             filein = openFile("src/"+filename);
         }

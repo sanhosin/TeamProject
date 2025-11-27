@@ -52,7 +52,8 @@ public class LoginPane extends JPanel{
                 BorderFactory.createEmptyBorder(40, 40, 40, 40)));
 
         // 수정>> 여행가요 이미지 삽입
-        ImageIcon rawIcon = new ImageIcon("TripPlanner/src/main/resources/images/logo.png");
+        System.out.println(Main.tdm.rootPath);
+        ImageIcon rawIcon = new ImageIcon(Main.tdm.rootPath+"logo.png");
         Image scaledImage = rawIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
 

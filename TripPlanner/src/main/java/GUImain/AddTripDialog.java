@@ -74,7 +74,7 @@ public class AddTripDialog extends JDialog {
         title.setIconTextGap(10);
 
         // 오른쪽: 닫기 아이콘
-        ImageIcon rawClose = new ImageIcon("TripPlanner/src/main/resources/images/x.png");
+        ImageIcon rawClose = new ImageIcon(Main.tdm.rootPath+"x.png");
         Image closeImg = rawClose.getImage().getScaledInstance(20, 25, Image.SCALE_SMOOTH);
         JLabel closeBtn = new JLabel(new ImageIcon(closeImg));
 
@@ -167,7 +167,7 @@ public class AddTripDialog extends JDialog {
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 5, 0);
 
-        ImageIcon uploadRaw = new ImageIcon("src/main/resources/images/pol.png");
+        ImageIcon uploadRaw = new ImageIcon(Main.tdm.rootPath+"pol.png");
         Image uploadImg = uploadRaw.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         JLabel icon = new JLabel(new ImageIcon(uploadImg));
 
@@ -195,7 +195,8 @@ public class AddTripDialog extends JDialog {
                 File Img_File = new File(userHome, "OneDrive/사진");
                 fileChooser.setCurrentDirectory(Img_File);
 
-                fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "png", "jpeg", "gif"));
+                fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일",
+                                                                     "jpg", "png", "jpeg", "gif"));
 
                 if (fileChooser.showOpenDialog(AddTripDialog.this) == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();

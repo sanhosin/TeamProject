@@ -22,6 +22,7 @@ public class JoinPane extends JPanel {
         this.root = root;
         this.card = card;
     }
+    
 
     public JPanel setupJoinPanel() {
         JPanel joinPanel = new JPanel(new GridBagLayout());

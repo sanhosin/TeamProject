@@ -2,6 +2,7 @@ package main.java.domain;
 
 import java.util.Scanner;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -11,6 +12,8 @@ import main.java.mgr.Manager;
 import main.java.GUImain.MainPane;
 
 public class TestDataManage {
+
+    public String rootPath=getRootPath();
     User loginedUser=null;
     Trip currentTrip=null;
     public static Manager<User> userMgr=new Manager<>();
@@ -18,6 +21,19 @@ public class TestDataManage {
     public TestDataManage() {
         readAllUser("user.txt");
     }
+    private String getRootPath(){
+        String[] sArray=(new File("").getAbsolutePath()).split("\\\\");
+        String root=sArray[sArray.length-1];
+        String result="";
+        if(root.equals("TeamProject")){
+            result+="TripPlanner/src/main/resources/images/";
+        }
+        if(root.equals("TripPlanner")){
+            result+="src/main/resources/images/";
+        }
+        return result;
+    }
+    
     //*********************데이터 파일 저장****************/
     public void readData(){
         loginedUser.readTrip(loginedUser.getID()+"_trip.txt");

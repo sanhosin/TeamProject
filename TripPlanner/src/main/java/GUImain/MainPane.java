@@ -33,7 +33,7 @@ public class MainPane extends JPanel {
     private boolean isSidebarVisible = false;
     private final int SLIDE_WIDTH = 180;
     private final int ANIMATION_STEPS = 20;
-    private final int ANIMATION_DELAY_MS = 20;
+    private final int ANIMATION_DELAY_MS = 5;
 
     private JPanel listContainer;
     private TravelSearchPane travelSearchPanelRef;
@@ -116,11 +116,11 @@ public class MainPane extends JPanel {
 
         Font sideFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 14);
 
-        panel.add(sidebarItem("TripPlanner/src/main/resources/images/gachi.png", "친구 관리", sideFont));
+        panel.add(sidebarItem(Main.tdm.rootPath+"gachi.png", "친구 관리", sideFont));
         panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem("TripPlanner/src/main/resources/images/dal2.png", "일정 관리", sideFont));
+        panel.add(sidebarItem(Main.tdm.rootPath+"dal2.png", "일정 관리", sideFont));
         panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem("TripPlanner/src/main/resources/images/honja.png", "유저 정보", sideFont));
+        panel.add(sidebarItem(Main.tdm.rootPath+"honja.png", "유저 정보", sideFont));
 
         panel.add(Box.createVerticalGlue());
 
@@ -181,7 +181,7 @@ public class MainPane extends JPanel {
         menuBox.setPreferredSize(new Dimension(40, 40)); // 직사각형 크기
         menuBox.setOpaque(false); // 배경 투명
 
-        ImageIcon headerRaw = new ImageIcon("TripPlanner/src/main/resources/images/menu.png");
+        ImageIcon headerRaw = new ImageIcon(Main.tdm.rootPath+"menu.png");
         Image headerImg = headerRaw.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         JLabel menuIcon = new JLabel(new ImageIcon(headerImg));
 
@@ -191,7 +191,7 @@ public class MainPane extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 toggleSidebar();
-                menuBox.add(menuBox);
+                menuBox.add(menuIcon);
             }
         });
 
@@ -229,7 +229,7 @@ public class MainPane extends JPanel {
         panel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
         // 수정>> 나의여행
-        ImageIcon rawIcon2 = new ImageIcon("TripPlanner/src/main/resources/images/dal1.png");
+        ImageIcon rawIcon2 = new ImageIcon(Main.tdm.rootPath+"dal1.png");
         Image img2 = rawIcon2.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
         ImageIcon icon2 = new ImageIcon(img2);
 
