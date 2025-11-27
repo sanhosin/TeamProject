@@ -14,7 +14,9 @@ public class User implements Manageable,UIData{
     String password;
     String nickname;
     Manager<Trip> tripMgr=new Manager<>();
-    ArrayList<User> friedsList=new ArrayList<>();
+
+    ArrayList<User> friedsList = new ArrayList<>(); // 친구 목록 (오타 유지)
+    ArrayList<User> receivedRequests = new ArrayList<>();
 
     @Override
     public void read(Scanner scan) {
@@ -79,8 +81,65 @@ public class User implements Manageable,UIData{
     public String getNick() {
         return nickname;
     }
+    // 닉네임 수정하기
+    public void setNick(String nickname) {
+        this.nickname = nickname;
+    }
 
     public String getPwd() {
         return password;
+    }
+    // 비번 수정하기
+    public void setPwd(String password) {
+        this.password = password;
+    }
+
+    public ArrayList<User> getFriendsList() {
+        return friedsList;
+    }
+
+    // 2. 친구 추가하기 (오류 나던 부분 해결)
+    public void addFriend(User u) {
+        if (!friedsList.contains(u)) {
+            friedsList.add(u);
+        }
+    }
+
+    // 3. 친구 삭제하기
+    public void removeFriend(User u) {
+        friedsList.remove(u);
+    }
+
+    // --- [친구 요청(Request) 관련 기능] ---
+
+    // 4. 받은 요청 목록 가져오기
+    public ArrayList<User> getReceivedRequests() {
+        return receivedRequests;
+    }
+
+    // 5. 요청 받기
+    public void receiveFriendRequest(User sender) {
+        if (!friedsList.contains(sender) && !receivedRequests.contains(sender)) {
+            receivedRequests.add(sender);
+        }
+    }
+
+    // 6. 요청 수락 (내 친구로 추가 + 상대방 친구로 추가 + 대기열 삭제)
+    public void acceptFriendRequest(User sender) {
+        if (receivedRequests.contains(sender)) {
+            receivedRequests.remove(sender);
+            this.addFriend(sender);
+            sender.addFriend(this);
+        }
+    }
+
+    // 7. 요청 거절
+    public void rejectFriendRequest(User sender) {
+        receivedRequests.remove(sender);
+    }
+
+    // 8. 이미 요청했는지 확인
+    public boolean hasReceivedRequestFrom(User sender) {
+        return receivedRequests.contains(sender);
     }
 }

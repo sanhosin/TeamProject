@@ -79,7 +79,11 @@ public class MainPane extends JPanel {
     }
 
     private void toggleSidebar() {
+        // 현재 열려있으면(true) -> 목표는 0 (닫기)
+        // 현재 닫혀있으면(false) -> 목표는 180 (열기)
+
         final int targetWidth = isSidebarVisible ? 0 : SLIDE_WIDTH;
+
         final int startWidth = sidebar.getPreferredSize().width;
         final int delta = (targetWidth - startWidth) / ANIMATION_STEPS;
 
@@ -89,11 +93,13 @@ public class MainPane extends JPanel {
                 int currentWidth = sidebar.getPreferredSize().width;
                 int newWidth = currentWidth + delta;
 
+                // 목표치에 도달했는지 확인
                 boolean shouldStop = (delta > 0 && newWidth >= targetWidth) || (delta < 0 && newWidth <= targetWidth);
 
                 if (shouldStop) {
                     newWidth = targetWidth;
                     ((Timer) e.getSource()).stop();
+                    // 애니메이션이 끝나면 상태 반전 (열림 <-> 닫힘)
                     isSidebarVisible = !isSidebarVisible;
                 }
 
@@ -118,9 +124,31 @@ public class MainPane extends JPanel {
 
         Font sideFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 14);
 
-        panel.add(sidebarItem(Main.tdm.rootPath+"gachi.png", "친구 관리", sideFont));
+        // 1. 친구 관리 버튼 (수정됨: 클릭 시 화면 전환)
+        JPanel friendBtn = sidebarItem(Main.tdm.rootPath + "gachi.png", "친구 관리", sideFont);
+        friendBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        friendBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                toggleSidebar(); // 사이드바 닫기
+                Main.card.show(Main.root, "친구관리"); // 화면 이동!
+            }
+        });
+        panel.add(friendBtn);
+
         panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem(Main.tdm.rootPath+"honja.png", "유저 정보", sideFont));
+
+        // 2. 유저 정보 버튼 (수정됨: 클릭 시 화면 전환)
+        JPanel userBtn = sidebarItem(Main.tdm.rootPath + "honja.png", "유저 정보", sideFont);
+        userBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        userBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                toggleSidebar(); // 사이드바 닫기
+                Main.card.show(Main.root, "내정보"); // 화면 이동!
+            }
+        });
+        panel.add(userBtn);
 
         panel.add(Box.createVerticalGlue());
 
@@ -192,8 +220,7 @@ public class MainPane extends JPanel {
         menuBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                toggleSidebar();
-                menuBox.add(menuIcon);
+                toggleSidebar(); // 여기가 스위치 역할입니다.
             }
         });
 

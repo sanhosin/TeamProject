@@ -178,4 +178,5 @@ public class TestDataManage {
         currentTrip.setDetails();
     }
     
+    
 }

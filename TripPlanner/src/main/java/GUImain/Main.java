@@ -55,6 +55,9 @@ public class Main {
         root.add(mainPanel.setupMainPanel(), "메인");
         root.add(travelSearchPanel.setupMainPanel(), "여행지 검색"); // "여행지 검색" 키로 등록
 
+        root.add(new FriendManagePane(), "친구관리");
+        root.add(new UserInfoPane(), "내정보");
+
         card.show(root, "로그인"); // 초기 화면을 '로그인'으로 설정
 
         frame.pack();
