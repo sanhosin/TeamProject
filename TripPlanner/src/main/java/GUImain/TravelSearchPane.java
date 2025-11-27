@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import main.java.domain.*;
 
@@ -94,8 +96,6 @@ public class TravelSearchPane extends JPanel {
         Font sideFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 14);
 
         panel.add(sidebarItem("👤", "친구 관리", sideFont));
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem("🗓", "일정 관리", sideFont));
         panel.add(Box.createVerticalStrut(10));
         panel.add(sidebarItem("⚙", "유저 정보", sideFont));
 
@@ -189,6 +189,7 @@ public class TravelSearchPane extends JPanel {
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftPanel.setOpaque(false);
 
+        JPanel searchBar = buildSearchBar();
         JLabel backIcon = new JLabel(); // 텍스트 제거해서 사각형 공간 제거
 
         backIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
@@ -244,6 +245,7 @@ public class TravelSearchPane extends JPanel {
         });
 
         panel.add(leftPanel, BorderLayout.WEST);
+        panel.add(searchBar, BorderLayout.CENTER);
         panel.add(addScheduleBtn, BorderLayout.EAST);
 
         return panel;
@@ -402,5 +404,49 @@ public class TravelSearchPane extends JPanel {
         card.add(btnPanel, BorderLayout.EAST);
 
         return card;
+    }
+
+    private JPanel buildSearchBar() {
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        searchPanel.setOpaque(false);
+        searchPanel.setMaximumSize(new Dimension(300, 40));
+
+        JTextField searchField = new JTextField("검색어를 입력하세요");
+        searchField.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
+        searchField.setForeground(new Color(150, 150, 150));
+        searchField.setBackground(new Color(240, 240, 240));
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(5, 10, 5, 10)
+        ));
+
+        // Placeholder 기능
+        searchField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (searchField.getText().equals("검색어를 입력하세요")) {
+                    searchField.setText("");
+                    searchField.setForeground(TITLE_COLOR);
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setText("검색어를 입력하세요");
+                    searchField.setForeground(new Color(150, 150, 150));
+                }
+            }
+        });
+
+        // 돋보기 아이콘 추가
+        JLabel searchIcon = new JLabel("🔍");
+        searchIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 16));
+        searchIcon.setBorder(new EmptyBorder(0, 5, 0, 5));
+        searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        searchPanel.add(searchField, BorderLayout.CENTER);
+        searchPanel.add(searchIcon, BorderLayout.EAST);
+
+        return searchPanel;
     }
 }

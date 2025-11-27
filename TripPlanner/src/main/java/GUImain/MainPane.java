@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.image.BufferedImage;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class MainPane extends JPanel {
 
@@ -118,8 +120,6 @@ public class MainPane extends JPanel {
 
         panel.add(sidebarItem(Main.tdm.rootPath+"gachi.png", "친구 관리", sideFont));
         panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem(Main.tdm.rootPath+"dal2.png", "일정 관리", sideFont));
-        panel.add(Box.createVerticalStrut(10));
         panel.add(sidebarItem(Main.tdm.rootPath+"honja.png", "유저 정보", sideFont));
 
         panel.add(Box.createVerticalGlue());
@@ -176,6 +176,8 @@ public class MainPane extends JPanel {
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftPanel.setOpaque(false);
 
+        JPanel searchBar = buildSearchBar();
+
         // 수정>> 이미지삽입
         JPanel menuBox = new JPanel(new GridBagLayout()); // 가운데 정렬용
         menuBox.setPreferredSize(new Dimension(40, 40)); // 직사각형 크기
@@ -217,6 +219,7 @@ public class MainPane extends JPanel {
         });
 
         panel.add(leftPanel, BorderLayout.WEST);
+        panel.add(searchBar, BorderLayout.CENTER);
         panel.add(addBtn, BorderLayout.EAST);
 
         return panel;
@@ -248,6 +251,7 @@ public class MainPane extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(BG_COLOR);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         panel.add(myTripTitle);
         panel.add(Box.createVerticalStrut(20));
@@ -259,13 +263,13 @@ public class MainPane extends JPanel {
     private JPanel buildTripCard(Trip t) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
 
-        final int CARD_HEIGHT = 150;
+        final int CARD_HEIGHT = 120;
         final int IMAGE_WIDTH = 200;
         final int IMAGE_HEIGHT = 150;
         final int CARD_INNER_MARGIN = 12;
 
         // 최대 크기 설정으로 늘어남 방지 (세로 고정)
-        card.setPreferredSize(new Dimension(1000, CARD_HEIGHT));
+        card.setPreferredSize(new Dimension(0, CARD_HEIGHT));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, CARD_HEIGHT));
 
         card.setBackground(CARD_COLOR);
@@ -297,28 +301,28 @@ public class MainPane extends JPanel {
         Object[] uidata = t.getUidata();
         String tripTitle = (String) uidata[Trip.TRIP_TITLE];
 
-        // 🔹 Trip 이미지 경로를 "index 기준"으로 강제 지정
-        int index = Main.tdm.getTripList().indexOf(t);
-        String tripImgPath;
-
-        if (index == 0) {
-            tripImgPath = "TripPlanner/src/main/resources/images/london.png";
-        } else if (index == 1) {
-            tripImgPath = "TripPlanner/src/main/resources/images/pari.png";
-        } else {
-            tripImgPath = "TripPlanner/src/main/resources/images/default.png";
-        }
+        String tripImgPath = t.getTripImagePath();
 
         // 🔹 imageLabel 에 아이콘 세팅
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setVerticalAlignment(SwingConstants.CENTER);
 
-        ImageIcon rawIcon = new ImageIcon(tripImgPath);
-        Image scaledImg = rawIcon.getImage().getScaledInstance(
-                IMAGE_WIDTH,
-                IMAGE_HEIGHT,
-                Image.SCALE_SMOOTH);
-        imageLabel.setIcon(new ImageIcon(scaledImg));
+        if (tripImgPath != null && !tripImgPath.isEmpty() && !tripImgPath.equals("default.jpg")) {
+            try {
+                ImageIcon rawIcon = new ImageIcon(tripImgPath);
+                Image scaledImg = rawIcon.getImage().getScaledInstance(
+                        IMAGE_WIDTH,
+                        IMAGE_HEIGHT,
+                        Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(scaledImg));
+            } catch (Exception ex) {
+                System.err.println("Error loading image from path: " + tripImgPath);
+            }
+        } else {
+            ImageIcon rawIcon = new ImageIcon(Main.tdm.rootPath + "default.png");
+            Image scaledImg = rawIcon.getImage().getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImg));
+        }
 
         // 🔹 회색 박스(imagePanel) 가운데에 imageLabel 올리기
         imagePanel.add(imageLabel, BorderLayout.CENTER);
@@ -389,6 +393,49 @@ public class MainPane extends JPanel {
         card.add(controlPanel, BorderLayout.EAST);
 
         return card;
+    }
+
+    private JPanel buildSearchBar() {
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        searchPanel.setOpaque(false);
+        searchPanel.setMaximumSize(new Dimension(300, 40)); // 검색창 최대 너비 제한
+
+        JTextField searchField = new JTextField("검색어를 입력하세요");
+        searchField.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
+        searchField.setForeground(new Color(150, 150, 150)); // Placeholder 색상
+        searchField.setBackground(new Color(240, 240, 240));
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                new EmptyBorder(5, 10, 5, 10)
+        ));
+
+        searchField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (searchField.getText().equals("검색어를 입력하세요")) {
+                    searchField.setText("");
+                    searchField.setForeground(TITLE_COLOR);
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setText("검색어를 입력하세요");
+                    searchField.setForeground(new Color(150, 150, 150));
+                }
+            }
+        });
+
+        // 돋보기 아이콘 추가
+        JLabel searchIcon = new JLabel("🔍");
+        searchIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 16));
+        searchIcon.setBorder(new EmptyBorder(0, 5, 0, 5));
+        searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        searchPanel.add(searchField, BorderLayout.CENTER);
+        searchPanel.add(searchIcon, BorderLayout.EAST);
+
+        return searchPanel;
     }
 
     private ImageIcon loadImage(String imagePath, int width, int height) {

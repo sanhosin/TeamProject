@@ -22,13 +22,13 @@ public class ScheduleAddDialog extends JDialog {
     private final Color TEXT_GRAY = new Color(150, 150, 150);
 
     private final Color[] COLOR_OPTIONS = {
-            new Color(51, 153, 255), // 파랑
-            new Color(255, 51, 51), // 빨강
-            new Color(51, 204, 153), // 초록
-            new Color(255, 153, 0), // 주황
-            new Color(153, 102, 255), // 보라
-            new Color(255, 204, 51), // 노랑
-            new Color(255, 102, 178) // 분홍
+            new Color(51, 153, 255),
+            new Color(255, 51, 51),
+            new Color(51, 204, 153),
+            new Color(255, 153, 0),
+            new Color(153, 102, 255),
+            new Color(255, 204, 51),
+            new Color(255, 102, 178)
     };
     private TravelSearchPane travelSearchPanel;
     private JTextField titleField;
@@ -37,29 +37,30 @@ public class ScheduleAddDialog extends JDialog {
     private JTextField locationField;
     private JTextField descriptionField;
     private Color selectedColor = COLOR_OPTIONS[0];
-    private TripPlan toModify = null;
+    private TripPlan toModify=null;
     private Object[] uidata;
     private String dialogTitle;
 
     private final String PLACEHOLDER_TITLE = "일정 제목을 입력하세요";
-    private final String PLACEHOLDER_DATE = "ex)25/11/15"; // 이미지처럼 연도-월-일만 남김
-    private final String PLACEHOLDER_TIME = "ex)10:00";
+    private final String PLACEHOLDER_DATE = "2025-11-15";
+    private final String PLACEHOLDER_TIME = "예: 10:00";
     private final String PLACEHOLDER_LOCATION = "위치를 입력하세요";
     private final String PLACEHOLDER_DESCRIPTION = "설명을 입력하세요";
 
+
     public ScheduleAddDialog(Frame owner, String fontName, TravelSearchPane travelSearchPanel) {
         super(owner, true);
-        this.travelSearchPanel = travelSearchPanel;
-        dialogTitle = "일정 추가";
+        this.travelSearchPanel=travelSearchPanel;
+        dialogTitle="일정 추가";
         initDialog(owner);
     }
 
-    public ScheduleAddDialog(Frame owner, String fontName, TravelSearchPane travelSearchPanel, TripPlan toModify) {
+    public ScheduleAddDialog(Frame owner, String fontName, TravelSearchPane travelSearchPanel,TripPlan toModify) {
         super(owner, true);
-        this.travelSearchPanel = travelSearchPanel;
-        this.toModify = toModify;
-        uidata = toModify.getUidata();
-        dialogTitle = "일정 수정";
+        this.travelSearchPanel=travelSearchPanel;
+        this.toModify=toModify;
+        uidata=toModify.getUidata();
+        dialogTitle="일정 수정";
         initDialog(owner);
     }
 
@@ -80,18 +81,20 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.setBackground(Color.WHITE);
         mainPanel.setBorder(new EmptyBorder(25, 40, 20, 40));
 
+        mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         mainPanel.add(buildHeader(dialogTitle));
         mainPanel.add(Box.createVerticalStrut(25));
 
         boolean isModify = (toModify != null);
 
-        String initialTitle = isModify ? (String) uidata[TripPlan.PLAN_TITLE] : PLACEHOLDER_TITLE;
+        String initialTitle = isModify ? (String)uidata[TripPlan.PLAN_TITLE] : PLACEHOLDER_TITLE;
         titleField = buildInputField(initialTitle, PLACEHOLDER_TITLE, 35, !isModify);
 
-        String initialLocation = isModify ? (String) uidata[TripPlan.PLAN_LOC] : PLACEHOLDER_LOCATION;
+        String initialLocation = isModify ? (String)uidata[TripPlan.PLAN_LOC] : PLACEHOLDER_LOCATION;
         locationField = buildInputField(initialLocation, PLACEHOLDER_LOCATION, 35, !isModify);
 
-        String initialDescription = isModify ? (String) uidata[TripPlan.PLAN_REVIEW] : PLACEHOLDER_DESCRIPTION;
+        String initialDescription = isModify ? (String)uidata[TripPlan.PLAN_REVIEW] : PLACEHOLDER_DESCRIPTION;
         descriptionField = buildInputField(initialDescription, PLACEHOLDER_DESCRIPTION, 35, !isModify);
 
         // UI 구성
@@ -99,6 +102,8 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.add(Box.createVerticalStrut(5));
         mainPanel.add(titleField);
         mainPanel.add(Box.createVerticalStrut(20));
+
+        JPanel dateTimeSection = buildDateTimeSection(isModify);
 
         mainPanel.add(buildDateTimeSection(isModify));
         mainPanel.add(Box.createVerticalStrut(20));
@@ -113,11 +118,17 @@ public class ScheduleAddDialog extends JDialog {
         mainPanel.add(descriptionField);
         mainPanel.add(Box.createVerticalStrut(30));
 
-        mainPanel.add(buildColorSelection(isModify ? (Color) uidata[TripPlan.PLAN_COLOR] : COLOR_OPTIONS[0]));
+        JPanel colorSelection = buildColorSelection(isModify ? (Color)uidata[TripPlan.PLAN_COLOR] : COLOR_OPTIONS[0]);
+        colorSelection.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(colorSelection);
+
         mainPanel.add(Box.createVerticalGlue());
 
         mainPanel.add(Box.createVerticalStrut(20));
-        mainPanel.add(buildButtonRow());
+
+        JPanel buttonRow = buildButtonRow();
+        buttonRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(buttonRow);
 
         return mainPanel;
     }
@@ -131,10 +142,9 @@ public class ScheduleAddDialog extends JDialog {
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 22));
         title.setForeground(TITLE_COLOR);
 
-        ImageIcon rawClose = new ImageIcon("TripPlanner/src/main/resources/images/x.png");
-        Image scaledClose = rawClose.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
-        JLabel closeBtn = new JLabel(new ImageIcon(scaledClose));
-
+        JLabel closeBtn = new JLabel("✕");
+        closeBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 20));
+        closeBtn.setForeground(TEXT_GRAY);
         closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -164,7 +174,8 @@ public class ScheduleAddDialog extends JDialog {
         inputField.setBackground(INPUT_BG);
         inputField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(LIGHT_GRAY),
-                new EmptyBorder(8, 10, 8, 10)));
+                new EmptyBorder(8, 10, 8, 10)
+        ));
         inputField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         if (usePlaceholder) {
@@ -206,26 +217,27 @@ public class ScheduleAddDialog extends JDialog {
         }
     }
 
+
     private JPanel buildDateTimeSection(boolean isModify) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // 1. 연도-월-일
-        JLabel dateLabel = buildSection("일정 시간");
+        // 1. 연도-월-일 레이블
+        JLabel dateLabel = buildSection("연도-월-일");
         panel.add(dateLabel);
         panel.add(Box.createVerticalStrut(5));
 
         boolean usePlaceholder = !isModify;
 
-        String initialDate = isModify ? (String) uidata[TripPlan.PLAN_DATE] : PLACEHOLDER_DATE;
+        String initialDate = isModify ? (String)uidata[TripPlan.PLAN_DATE] : PLACEHOLDER_DATE;
         dateField = buildInputField(initialDate, PLACEHOLDER_DATE, 35, usePlaceholder);
 
-        String initialTime = isModify ? (String) uidata[TripPlan.PLAN_TIME] : PLACEHOLDER_TIME;
+        String initialTime = isModify ? (String)uidata[TripPlan.PLAN_TIME] : PLACEHOLDER_TIME;
         timeField = buildInputField(initialTime, PLACEHOLDER_TIME, 35, usePlaceholder);
 
-        // ⭐ 2. 날짜 필드와 시간 레이블/필드를 담을 패널 (수평 정렬)
+        // 2. 날짜 필드와 시간 레이블/필드를 담을 패널 (수평 정렬)
         JPanel customRow = new JPanel(new GridBagLayout());
         customRow.setOpaque(false);
         customRow.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -245,12 +257,12 @@ public class ScheduleAddDialog extends JDialog {
         gbc.gridx = 1;
         gbc.weightx = 0.0;
         gbc.insets = new Insets(0, 0, 0, 5);
-        JLabel timeLabelText = buildSection("");
-
-        // timeLabelText.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
-        timeLabelText.setPreferredSize(new Dimension(15, 35));
-        timeLabelText.setMaximumSize(new Dimension(15, 35));
-        timeLabelText.setHorizontalAlignment(SwingConstants.RIGHT); // 우측 정렬
+        JLabel timeLabelText = buildSection("시간");
+        timeLabelText.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
+        timeLabelText.setPreferredSize(new Dimension(45, 35));
+        timeLabelText.setMaximumSize(new Dimension(45, 35));
+        timeLabelText.setForeground(TEXT_GRAY);
+        timeLabelText.setHorizontalAlignment(SwingConstants.RIGHT);
         timeLabelText.setVerticalAlignment(SwingConstants.CENTER);
         customRow.add(timeLabelText, gbc);
 
@@ -274,10 +286,12 @@ public class ScheduleAddDialog extends JDialog {
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
+        // 색상 레이블
         JLabel label = buildSection("색상");
         panel.add(label);
         panel.add(Box.createVerticalStrut(10));
 
+        // FlowLayout.LEFT 적용
         JPanel colorGrid = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         colorGrid.setOpaque(false);
 
@@ -347,6 +361,7 @@ public class ScheduleAddDialog extends JDialog {
         }
     }
 
+
     private JPanel buildButtonRow() {
         JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rowPanel.setOpaque(false);
@@ -359,8 +374,7 @@ public class ScheduleAddDialog extends JDialog {
         cancelBtn.addActionListener(e -> dispose());
 
         JButton saveBtn = new JButton("추가");
-        if (toModify != null)
-            saveBtn.setText("저장");
+        if (toModify != null) saveBtn.setText("저장");
 
         styleButton(saveBtn, MAIN_BLUE, Color.WHITE, new Dimension(80, 35));
 
@@ -369,8 +383,7 @@ public class ScheduleAddDialog extends JDialog {
             String date = dateField.getText().equals(PLACEHOLDER_DATE) ? "" : dateField.getText();
             String time = timeField.getText().equals(PLACEHOLDER_TIME) ? "" : timeField.getText();
             String location = locationField.getText().equals(PLACEHOLDER_LOCATION) ? "" : locationField.getText();
-            String description = descriptionField.getText().equals(PLACEHOLDER_DESCRIPTION) ? ""
-                    : descriptionField.getText();
+            String description = descriptionField.getText().equals(PLACEHOLDER_DESCRIPTION) ? "" : descriptionField.getText();
 
             if (title.trim().isEmpty() || date.trim().isEmpty() || location.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "제목, 날짜, 위치는 필수 입력 항목입니다.", "경고", JOptionPane.WARNING_MESSAGE);
@@ -384,7 +397,7 @@ public class ScheduleAddDialog extends JDialog {
             final int PLAN_REVIEW = 4;
             final int PLAN_COLOR = 5;
 
-            uidata = new Object[6];
+            uidata=new Object[6];
             uidata[PLAN_TITLE] = title;
             uidata[PLAN_DATE] = date;
             uidata[PLAN_TIME] = time;
@@ -392,9 +405,10 @@ public class ScheduleAddDialog extends JDialog {
             uidata[PLAN_REVIEW] = description;
             uidata[PLAN_COLOR] = selectedColor;
 
-            if (toModify == null) {
+            if(toModify==null){
                 Main.tdm.addPlan(uidata);
-            } else {
+            }
+            else{
                 toModify.set(uidata);
                 Main.tdm.modifyPlan();
             }

@@ -192,6 +192,14 @@ public class Trip implements Manageable,UIData {
         return imagePath;
     }
 
+    private String tripImagePath;
 
+    public String getTripImagePath() {
+        return this.tripImagePath;
+    }
+
+    public void setTripImagePath(String path) {
+        this.tripImagePath = path;
+    }
 
 }
