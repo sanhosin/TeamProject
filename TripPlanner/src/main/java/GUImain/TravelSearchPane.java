@@ -38,7 +38,6 @@ public class TravelSearchPane extends JPanel {
     JPanel listContainer;
     JLabel tripTitle;
 
-
     public TravelSearchPane(JPanel root, CardLayout card, MainPane mainPaneRef) {
         this.root = root;
         this.card = card;
@@ -69,7 +68,7 @@ public class TravelSearchPane extends JPanel {
 
                 if (shouldStop) {
                     newWidth = targetWidth;
-                    ((Timer)e.getSource()).stop();
+                    ((Timer) e.getSource()).stop();
                     isSidebarVisible = !isSidebarVisible;
                 }
 
@@ -123,25 +122,24 @@ public class TravelSearchPane extends JPanel {
         return itemPanel;
     }
 
-
-    public void refreshPlanListUI(){
+    public void refreshPlanListUI() {
         listContainer.removeAll();
 
         ArrayList<TripPlan> planList = (ArrayList<TripPlan>) Main.tdm.getPlanList();
 
         // 날짜 기준 정렬 (없는 날짜는 맨 뒤)
-        for(int i = 0; i < planList.size()-1; i++){
-            for(int j = 0; j < planList.size()-1-i; j++){
+        for (int i = 0; i < planList.size() - 1; i++) {
+            for (int j = 0; j < planList.size() - 1 - i; j++) {
                 String s1 = planList.get(j).getDateDetail();
                 String s2 = planList.get(j + 1).getDateDetail();
 
                 long date1 = s1.contains("?") ? Long.MAX_VALUE : Long.parseLong(s1);
                 long date2 = s2.contains("?") ? Long.MAX_VALUE : Long.parseLong(s2);
 
-                if(date1 > date2){
+                if (date1 > date2) {
                     TripPlan temp = planList.get(j);
-                    planList.set(j, planList.get(j+1));
-                    planList.set(j+1, temp);
+                    planList.set(j, planList.get(j + 1));
+                    planList.set(j + 1, temp);
                 }
             }
         }
@@ -156,8 +154,7 @@ public class TravelSearchPane extends JPanel {
         listContainer.repaint();
     }
 
-
-    public void setTravelSearchPaneTitle(){
+    public void setTravelSearchPaneTitle() {
         tripTitle.setText(Main.tdm.getCurrentTripTitle());
     }
 
@@ -192,7 +189,8 @@ public class TravelSearchPane extends JPanel {
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftPanel.setOpaque(false);
 
-        JLabel backIcon = new JLabel("⬅");
+        JLabel backIcon = new JLabel(); // 텍스트 제거해서 사각형 공간 제거
+
         backIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
         backIcon.setForeground(TITLE_COLOR);
         backIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -201,7 +199,7 @@ public class TravelSearchPane extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // ⭐ 수정: null을 Trip 타입으로 명시적 캐스팅하여 모호성 제거 (NPE 방지)
-                Main.tdm.setCurrentTrip((main.java.domain.Trip)null);
+                Main.tdm.setCurrentTrip((main.java.domain.Trip) null);
 
                 card.show(root, "메인");
                 mainPaneRef.refreshTripListUI();
@@ -213,19 +211,22 @@ public class TravelSearchPane extends JPanel {
         // menuIcon.setForeground(TITLE_COLOR);
 
         // menuIcon.addMouseListener(new MouseAdapter() {
-        //     @Override
-        //     public void mouseClicked(MouseEvent e) {
-        //         toggleSidebar();
-        //     }
+        // @Override
+        // public void mouseClicked(MouseEvent e) {
+        // toggleSidebar();
+        // }
         // });
-
 
         JLabel title = new JLabel("여행가요");
         title.setForeground(TITLE_COLOR);
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
+        ImageIcon raw = new ImageIcon("TripPlanner/src/main/resources/images/logo.png");
+        Image img = raw.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+        title.setIcon(new ImageIcon(img));
+        title.setIconTextGap(10);
 
         leftPanel.add(backIcon);
-        //leftPanel.add(menuIcon);
+        // leftPanel.add(menuIcon);
         leftPanel.add(title);
 
         JButton addScheduleBtn = new JButton("+ 일정 추가");
@@ -241,7 +242,6 @@ public class TravelSearchPane extends JPanel {
             ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, this);
             dialog.setVisible(true);
         });
-
 
         panel.add(leftPanel, BorderLayout.WEST);
         panel.add(addScheduleBtn, BorderLayout.EAST);
@@ -267,7 +267,8 @@ public class TravelSearchPane extends JPanel {
 
         listContainer.setBorder(new EmptyBorder(0, 0, 0, 0));
 
-        if(Main.tdm.getLoginedUser()!=null) refreshPlanListUI();
+        if (Main.tdm.getLoginedUser() != null)
+            refreshPlanListUI();
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -288,7 +289,6 @@ public class TravelSearchPane extends JPanel {
     private static final int PLAN_LOC = 3;
     private static final int PLAN_REVIEW = 4;
 
-
     private JPanel buildScheduleCard(TripPlan tp, Object[] uidata) {
 
         JPanel card = new JPanel(new BorderLayout(10, 0));
@@ -296,17 +296,26 @@ public class TravelSearchPane extends JPanel {
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
         card.setBorder(new CompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(15, 15, 15, 15)
-        ));
+                new EmptyBorder(15, 15, 15, 15)));
 
         // uidata의 타입을 안전하게 확인하고 사용
-        Color planColor = (uidata.length > PLAN_COLOR && uidata[PLAN_COLOR] instanceof Color) ? (Color)uidata[PLAN_COLOR] : new Color(150, 150, 150);
-        String planTitle = (uidata.length > PLAN_TITLE && uidata[PLAN_TITLE] instanceof String) ? (String)uidata[PLAN_TITLE] : "제목 미정";
-        String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] instanceof String) ? (String)uidata[PLAN_DATE] : "";
-        String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] instanceof String) ? (String)uidata[PLAN_TIME] : "00:00";
-        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] instanceof String) ? (String)uidata[PLAN_LOC] : "위치 미정";
-        String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] instanceof String) ? (String)uidata[PLAN_REVIEW] : "설명 없음";
-
+        Color planColor = (uidata.length > PLAN_COLOR && uidata[PLAN_COLOR] instanceof Color)
+                ? (Color) uidata[PLAN_COLOR]
+                : new Color(150, 150, 150);
+        String planTitle = (uidata.length > PLAN_TITLE && uidata[PLAN_TITLE] instanceof String)
+                ? (String) uidata[PLAN_TITLE]
+                : "제목 미정";
+        String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] instanceof String)
+                ? (String) uidata[PLAN_DATE]
+                : "";
+        String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] instanceof String)
+                ? (String) uidata[PLAN_TIME]
+                : "00:00";
+        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] instanceof String) ? (String) uidata[PLAN_LOC]
+                : "위치 미정";
+        String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] instanceof String)
+                ? (String) uidata[PLAN_REVIEW]
+                : "설명 없음";
 
         JLabel dot = new JLabel("●");
         dot.setForeground(planColor);
@@ -321,11 +330,38 @@ public class TravelSearchPane extends JPanel {
         t.setForeground(TITLE_COLOR);
         t.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel dt = new JLabel("🕒 " + planDate + " " + planTime +
-                "  © " + planLoc);
-        dt.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
-        dt.setForeground(new Color(90, 90, 110));
-        dt.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // 🔹 수정>>시간 아이콘 이미지 삽입
+        ImageIcon timeRaw = new ImageIcon("TripPlanner/src/main/resources/images/dal2.png");
+        Image timeImg = timeRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+        ImageIcon timeIcon = new ImageIcon(timeImg);
+
+        // 🔹 위치 아이콘 이미지 삽입
+        ImageIcon locRaw = new ImageIcon("TripPlanner/src/main/resources/images/wich.png");
+        Image locImg = locRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+        ImageIcon locIcon = new ImageIcon(locImg);
+
+        // 🔹 라벨 하나만 사용해서, 아이콘 + 글자 조합
+        // 🔹 날짜/시간 라벨
+        JLabel dateLabel = new JLabel(planDate + "  " + planTime);
+        dateLabel.setIcon(timeIcon); // 달력(또는 시간) 이미지
+        dateLabel.setIconTextGap(4);
+        dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
+        dateLabel.setForeground(new Color(90, 90, 110));
+
+        // 🔹 위치 라벨
+        JLabel locLabel = new JLabel("  " + planLoc); // 앞에 공백 하나
+        locLabel.setIcon(locIcon); // 위치 이미지
+        locLabel.setIconTextGap(4);
+        locLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
+        locLabel.setForeground(new Color(90, 90, 110));
+
+        // 🔹 둘을 한 줄에 넣을 패널
+        JPanel dtPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        dtPanel.setOpaque(false);
+        dtPanel.add(dateLabel);
+        dtPanel.add(Box.createHorizontalStrut(12)); // 날짜/위치 사이 간격
+        dtPanel.add(locLabel);
+        dtPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel d = new JLabel(planReview);
         d.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
@@ -335,26 +371,28 @@ public class TravelSearchPane extends JPanel {
 
         inner.add(t);
         inner.add(Box.createVerticalStrut(6));
-        inner.add(dt);
+        inner.add(dtPanel); // ✅ 새로 만든 패널
         inner.add(d);
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         btnPanel.setOpaque(false);
 
         JButton editBtn = new JButton("✏");
-        editBtn.addActionListener(e->{
+        editBtn.addActionListener(e -> {
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME,this,tp);
+            ScheduleAddDialog dialog = new ScheduleAddDialog(parentFrame, CUSTOM_FONT_NAME, this, tp);
             dialog.setVisible(true);
         });
         JButton deleteBtn = new JButton("🗑");
-        deleteBtn.addActionListener(e->{
+        deleteBtn.addActionListener(e -> {
             Main.tdm.deletePlan(tp);
             refreshPlanListUI();
         });
 
-        editBtn.setFocusPainted(false); editBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        deleteBtn.setFocusPainted(false); deleteBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        editBtn.setFocusPainted(false);
+        editBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        deleteBtn.setFocusPainted(false);
+        deleteBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         btnPanel.add(editBtn);
         btnPanel.add(deleteBtn);

@@ -150,15 +150,15 @@ public class MainPane extends JPanel {
         return itemPanel;
     }
 
-
     public void refreshTripListUI() {
-        if (listContainer == null) return;
+        if (listContainer == null)
+            return;
 
         listContainer.removeAll();
 
         List<Trip> tripList = Main.tdm.getTripList();
 
-        if(tripList != null) {
+        if (tripList != null) {
             for (Trip t : tripList) {
                 listContainer.add(buildTripCard(t));
                 // 카드 사이 간격 15픽셀
@@ -261,7 +261,7 @@ public class MainPane extends JPanel {
 
         final int CARD_HEIGHT = 150;
         final int IMAGE_WIDTH = 200;
-        final int IMAGE_HEIGHT =150;
+        final int IMAGE_HEIGHT = 150;
         final int CARD_INNER_MARGIN = 12;
 
         // 최대 크기 설정으로 늘어남 방지 (세로 고정)
@@ -295,20 +295,32 @@ public class MainPane extends JPanel {
         imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
 
         Object[] uidata = t.getUidata();
-        String tripTitle = (String)uidata[Trip.TRIP_TITLE];
-        String tripImgPath = (String)uidata[Trip.TRIP_IMG];
+        String tripTitle = (String) uidata[Trip.TRIP_TITLE];
 
-        if (tripImgPath!= null && !tripImgPath.equals("default.jpg")) {
-            try {
-                ImageIcon originalIcon = new ImageIcon(tripImgPath);
-                Image originalImage = originalIcon.getImage();
-                Image scaledImage = originalImage.getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
-                imageLabel.setIcon(new ImageIcon(scaledImage));
-            } catch (Exception ex) {
-                // 이미지 로드 실패 시 빈 상태 유지
-            }
+        // 🔹 Trip 이미지 경로를 "index 기준"으로 강제 지정
+        int index = Main.tdm.getTripList().indexOf(t);
+        String tripImgPath;
+
+        if (index == 0) {
+            tripImgPath = "TripPlanner/src/main/resources/images/london.png";
+        } else if (index == 1) {
+            tripImgPath = "TripPlanner/src/main/resources/images/pari.png";
+        } else {
+            tripImgPath = "TripPlanner/src/main/resources/images/default.png";
         }
 
+        // 🔹 imageLabel 에 아이콘 세팅
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imageLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+        ImageIcon rawIcon = new ImageIcon(tripImgPath);
+        Image scaledImg = rawIcon.getImage().getScaledInstance(
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                Image.SCALE_SMOOTH);
+        imageLabel.setIcon(new ImageIcon(scaledImg));
+
+        // 🔹 회색 박스(imagePanel) 가운데에 imageLabel 올리기
         imagePanel.add(imageLabel, BorderLayout.CENTER);
 
         card.add(imagePanel, BorderLayout.WEST);
@@ -324,13 +336,21 @@ public class MainPane extends JPanel {
         nameLabel.setForeground(TITLE_COLOR);
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        String toLocationLabel=(t.getPlanList().isEmpty())?"미정":t.getLocationDetail();
-        JLabel locationLabel = new JLabel("📍 " + toLocationLabel);
+        String toLocationLabel = (t.getPlanList().isEmpty()) ? "미정" : t.getLocationDetail();
+        // 수정>> 이미지 삽입 대신
+        ImageIcon pinRaw = new ImageIcon("TripPlanner/src/main/resources/images/wich.png");
+        Image pinScaled = pinRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+        ImageIcon pinIcon = new ImageIcon(pinScaled);
+
+        JLabel locationLabel = new JLabel(" " + toLocationLabel); // 텍스트만
+        locationLabel.setIcon(pinIcon);
+        locationLabel.setIconTextGap(2); // 이미지와 텍스트 간격 조절
+
         locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 10));
         locationLabel.setForeground(new Color(90, 90, 110));
         locationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        String toDateLabel=(t.getPlanList().isEmpty())?"미정":t.getDateDuration();
+        String toDateLabel = (t.getPlanList().isEmpty()) ? "미정" : t.getDateDuration();
         JLabel dateLabel = new JLabel(toDateLabel);
         dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 10));
         dateLabel.setForeground(new Color(90, 90, 110));
@@ -362,7 +382,7 @@ public class MainPane extends JPanel {
                 Main.tdm.deleteTrip(t);
                 refreshTripListUI();
             }
-            
+
         });
 
         controlPanel.add(deleteBtn);
