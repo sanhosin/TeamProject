@@ -1,6 +1,6 @@
 user_main pass_main 메인_테스터
 tester_a 1234 여행자_A
-aaa 1 1번데이터
+aaa 1 관리자
 bbb 22 2번데이터
 ccc 333 3번데이터
 abc 4444 4번데이터
@@ -8,4 +8,4 @@ ddd 55555 5번데이터
 abcde 6666 6번데이터
 master master_master 마스터
 tester tester_password 테스터
-frozn4770 030716 sanhosin
+frozn4770 1 sanhosin

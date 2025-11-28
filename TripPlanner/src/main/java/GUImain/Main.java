@@ -3,6 +3,7 @@ package main.java.GUImain;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Scanner;
 import javax.swing.*;
 import main.java.domain.TestDataManage;
@@ -38,6 +39,8 @@ public class Main {
         // TravelSearchPane을 여행별로 다르게 나타내기 위해 참조를 넘겨줍니다.
         mainPanel.setTravelSearchPanel(travelSearchPanel);
         loginPanel.getMainPane(mainPanel);
+
+        System.out.println(new File(".").getAbsolutePath());
 
         createAndShowGUI();
     }

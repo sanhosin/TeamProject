@@ -15,7 +15,7 @@ public class TripPlan implements Manageable, UIData {
     String location;
     ArrayList<User> friendsList = new ArrayList<>();
     String review; // 일정 리뷰는 잠시 String으로 변경해뒀습니다.(기존: ArrayList<PlanReview> reviews)
-    Color color;
+    String colorRGB;
 
     public static final int PLAN_TITLE = 0;
     public static final int PLAN_DATE = 1;
@@ -27,11 +27,12 @@ public class TripPlan implements Manageable, UIData {
     // 정보 저장
     @Override
     public void read(Scanner scan) {
-        this.title = scan.next();
+        this.title = replaceSpace(scan.next());
         this.date = scan.next();
         this.time = scan.next();
-        this.location = scan.next();
-        this.review=scan.next();
+        this.location = replaceSpace(scan.next());
+        this.review=replaceSpace(scan.next());
+        this.colorRGB=scan.next();
         changeNUll();
     }
 
@@ -42,6 +43,11 @@ public class TripPlan implements Manageable, UIData {
         if(location.equals("null"))location=null;
         if(review.equals("null"))review=null;
     }
+
+    private String replaceSpace(String s){
+        return s.replaceAll("_"," ");
+    }
+
     // 디버깅용 화면 출력
     @Override
     public void print() {
@@ -50,6 +56,10 @@ public class TripPlan implements Manageable, UIData {
 
     @Override
     public boolean matches(String kwd) {
+        if(title.contains(kwd))return true;
+        if(kwd.equals(date))return true;
+        if(kwd.equals(time))return true;
+        if(location.contains(kwd))return true;
         return false;
     }
 
@@ -60,12 +70,12 @@ public class TripPlan implements Manageable, UIData {
         time = (String) uidata[PLAN_TIME];
         location = (String) uidata[PLAN_LOC];
         review = (String) uidata[PLAN_REVIEW];
-        color = (Color) uidata[PLAN_COLOR];
+        colorRGB = (String) uidata[PLAN_COLOR];
     }
 
     @Override
-    public Object[] getUidata() {
-        Object[] uidata = { title, date, time, location, review, color };
+    public String[] getUidata() {
+        String[] uidata = { title, date, time, location, review, colorRGB };
         return uidata;
     }
 
@@ -118,6 +128,9 @@ public class TripPlan implements Manageable, UIData {
     }
     public String getReview() {
         return review;
+    }
+    public String getColorRGB(){
+        return colorRGB;
     }
 
 }

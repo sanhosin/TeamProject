@@ -31,14 +31,14 @@ public class Trip implements Manageable,UIData {
     }
 
     @Override
-    public Object[] getUidata() {
-        Object[] uidata={title,imagePath};
+    public String[] getUidata() {
+        String[] uidata={title,imagePath};
         return uidata;
     }
 
     @Override
     public void read(Scanner scan) {
-        title=scan.next();
+        title=replaceSpace(scan.next());
         imagePath=scan.next();
         locationDetail=scan.next();
         dateDuration=scan.next();
@@ -58,6 +58,9 @@ public class Trip implements Manageable,UIData {
         if(dateDuration.equals("null"))dateDuration=null;
     }
 
+    private String replaceSpace(String s){
+        return s.replaceAll("_"," ");
+    }
     @Override
     public void print() {
         // TODO Auto-generated method stub
@@ -66,8 +69,14 @@ public class Trip implements Manageable,UIData {
 
     @Override
     public boolean matches(String kwd) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'matches'");
+        if(title.contains(kwd))return true;
+        if(locationDetail!=null&&locationDetail.contains(kwd))return true;
+        //날짜 검색도 가능하도록 수정
+        return false;
+    }
+
+    public List<TripPlan> findAllPlans(String kwd){
+        return planMgr.findAll(kwd);
     }
 
     public void addPlan(Object[] uiData) {
@@ -134,18 +143,23 @@ public class Trip implements Manageable,UIData {
         int endOfDate=0;
         String locations="";
         int maxLocationNum=planMgr.mList.size();
+        int count=3;
 
         for(TripPlan tp:planMgr.mList){
+            String loc=tp.getLocation();
 
-            if(maxLocationNum>1){
-                locations+=tp.getLocation()+",";
-                maxLocationNum--;
+            if (count > 0) {
+                if (maxLocationNum > 1 && !locations.contains(loc)) {
+                    locations += loc + ",";
+                    maxLocationNum--;
+                    count--;
+                }
+                if (maxLocationNum == 1 && !locations.contains(loc)) {
+                    locations += loc;
+                    maxLocationNum--;
+                    count--;
+                }
             }
-            else if(maxLocationNum==1){
-                locations+=tp.getLocation();
-                maxLocationNum--;
-            }
-
             String date=tp.getDateDetail();
             date=date.substring(0,6);
             if(date.contains("?"))continue;

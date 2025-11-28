@@ -18,6 +18,10 @@ public class User implements Manageable,UIData{
     ArrayList<User> friedsList = new ArrayList<>(); // 친구 목록 (오타 유지)
     ArrayList<User> receivedRequests = new ArrayList<>();
 
+    public static int USER_ID=0;
+    public static int USER_PWD=1;
+    public static int USER_NICK=2;
+
     @Override
     public void read(Scanner scan) {
         id=scan.next();
@@ -44,6 +48,9 @@ public class User implements Manageable,UIData{
         return false;
     }
 
+    public List<Trip> findAllTrip(String kwd){
+        return tripMgr.findAll(kwd);
+    }
     public boolean isCorrect(String id,String pwd){
         return (this.id.equals(id)&&this.password.equals(pwd));
     }
@@ -63,15 +70,14 @@ public class User implements Manageable,UIData{
     }
     @Override
     public void set(Object[] uidata) {
-        id=(String)uidata[0];
-        password=(String)uidata[1];
-        nickname=(String)uidata[2];
+        id=(String)uidata[USER_ID];
+        password=(String)uidata[USER_PWD];
+        nickname=(String)uidata[USER_NICK];
     }
 
     @Override
-    public Object[] getUidata() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUidata'");
+    public String[] getUidata() {
+        return new String[]{id,password,nickname};
     }
 
     public String getID() {

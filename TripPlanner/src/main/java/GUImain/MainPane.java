@@ -39,6 +39,7 @@ public class MainPane extends JPanel {
 
     private JPanel listContainer;
     private TravelSearchPane travelSearchPanelRef;
+    private ArrayList<Trip> tripListToShow=null;
 
     public MainPane(JPanel root, CardLayout card) {
         this.root = root;
@@ -184,10 +185,11 @@ public class MainPane extends JPanel {
 
         listContainer.removeAll();
 
-        List<Trip> tripList = Main.tdm.getTripList();
+        if(tripListToShow==null)tripListToShow=(ArrayList<Trip>)Main.tdm.getTripList();
 
-        if (tripList != null) {
-            for (Trip t : tripList) {
+
+        if (tripListToShow != null) {
+            for (Trip t : tripListToShow) {
                 listContainer.add(buildTripCard(t));
                 // 카드 사이 간격 15픽셀
                 listContainer.add(Box.createVerticalStrut(15));
@@ -325,8 +327,8 @@ public class MainPane extends JPanel {
         JLabel imageLabel = new JLabel();
         imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
 
-        Object[] uidata = t.getUidata();
-        String tripTitle = (String) uidata[Trip.TRIP_TITLE];
+        String[] uidata = t.getUidata();
+        String tripTitle = uidata[Trip.TRIP_TITLE];
 
         String tripImgPath = t.getTripImagePath();
 
@@ -368,8 +370,8 @@ public class MainPane extends JPanel {
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         String toLocationLabel = (t.getPlanList().isEmpty()) ? "미정" : t.getLocationDetail();
-        // 수정>> 이미지 삽입 대신
-        ImageIcon pinRaw = new ImageIcon("TripPlanner/src/main/resources/images/wich.png");
+
+        ImageIcon pinRaw = new ImageIcon(Main.tdm.rootPath+"wich.png");
         Image pinScaled = pinRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon pinIcon = new ImageIcon(pinScaled);
 
@@ -458,9 +460,22 @@ public class MainPane extends JPanel {
         searchIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 16));
         searchIcon.setBorder(new EmptyBorder(0, 5, 0, 5));
         searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        searchIcon.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if(searchField.getText().isEmpty()){
+                    tripListToShow=null;
+                }
+                else{
+                    tripListToShow=(ArrayList<Trip>)(Main.tdm.getLoginedUser().findAllTrip(searchField.getText()));
+                }
+                refreshTripListUI();
+            }
+        });
 
         searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchIcon, BorderLayout.EAST);
+
 
         return searchPanel;
     }

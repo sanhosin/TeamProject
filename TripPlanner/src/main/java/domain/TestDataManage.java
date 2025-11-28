@@ -13,7 +13,7 @@ import main.java.GUImain.MainPane;
 
 public class TestDataManage {
 
-    public String rootPath=getRootPath();
+    public String rootPath=getRootPath(); //Main객체 생성과 동시에 자동으로 초기화됨
     User loginedUser=null;
     Trip currentTrip=null;
     public static Manager<User> userMgr=new Manager<>();
@@ -61,7 +61,7 @@ public class TestDataManage {
                 for(TripPlan tp:pList){
                     bw.write(replaceSpace(tp.getTitle())+" "+replaceSpace(tp.getDate())+
                     " "+replaceSpace(tp.getTime())+" "+replaceSpace(tp.getLocation())+" "+
-                    replaceSpace(tp.getReview())+"\n");
+                    replaceSpace(tp.getReview())+" "+tp.getColorRGB()+"\n");
                 }
             }
         }
@@ -83,6 +83,9 @@ public class TestDataManage {
         return result.substring(0,result.length()-1);
     }
     
+    public List<TripPlan> findAllPlans(String kwd){
+        return currentTrip.findAllPlans(kwd);
+    }
     //*********************입력데이터 콘솔창 입출력*************** */ */
     
 

@@ -37,6 +37,8 @@ public class TravelSearchPane extends JPanel {
     private final int ANIMATION_STEPS = 20;
     private final int ANIMATION_DELAY_MS = 20;
 
+    private ArrayList<TripPlan> planListToShow=null;
+
     JPanel listContainer;
     JLabel tripTitle;
 
@@ -55,97 +57,32 @@ public class TravelSearchPane extends JPanel {
         return this.mainPaneRef;
     }
 
-    private void toggleSidebar() {
-        final int targetWidth = isSidebarVisible ? 0 : SLIDE_WIDTH;
-        final int startWidth = sidebar.getPreferredSize().width;
-        final int delta = (targetWidth - startWidth) / ANIMATION_STEPS;
-
-        Timer timer = new Timer(ANIMATION_DELAY_MS, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int currentWidth = sidebar.getPreferredSize().width;
-                int newWidth = currentWidth + delta;
-
-                boolean shouldStop = (delta > 0 && newWidth >= targetWidth) || (delta < 0 && newWidth <= targetWidth);
-
-                if (shouldStop) {
-                    newWidth = targetWidth;
-                    ((Timer) e.getSource()).stop();
-                    isSidebarVisible = !isSidebarVisible;
-                }
-
-                sidebar.setPreferredSize(new Dimension(newWidth, sidebar.getHeight()));
-                contentPanel.revalidate();
-            }
-        });
-
-        if (timer.isRunning()) {
-            timer.stop();
-        }
-        timer.start();
-    }
-
-    private JPanel buildSidebar() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(30, 20, 50, 20));
-
-        panel.setOpaque(true);
-        panel.setBackground(CARD_COLOR);
-
-        Font sideFont = new Font(CUSTOM_FONT_NAME, Font.BOLD, 14);
-
-        panel.add(sidebarItem("👤", "친구 관리", sideFont));
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(sidebarItem("⚙", "유저 정보", sideFont));
-
-        panel.add(Box.createVerticalGlue());
-
-        return panel;
-    }
-
-    private JPanel sidebarItem(String icon, String text, Font font) {
-        JPanel itemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        itemPanel.setOpaque(false);
-
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 18));
-        iconLabel.setForeground(TITLE_COLOR);
-
-        JLabel textLabel = new JLabel(text);
-        textLabel.setFont(font);
-        textLabel.setForeground(TITLE_COLOR);
-
-        itemPanel.add(iconLabel);
-        itemPanel.add(textLabel);
-
-        return itemPanel;
-    }
-
     public void refreshPlanListUI() {
         listContainer.removeAll();
 
-        ArrayList<TripPlan> planList = (ArrayList<TripPlan>) Main.tdm.getPlanList();
+        if(planListToShow==null){
+            planListToShow = (ArrayList<TripPlan>) Main.tdm.getPlanList();
+        }
 
         // 날짜 기준 정렬 (없는 날짜는 맨 뒤)
-        for (int i = 0; i < planList.size() - 1; i++) {
-            for (int j = 0; j < planList.size() - 1 - i; j++) {
-                String s1 = planList.get(j).getDateDetail();
-                String s2 = planList.get(j + 1).getDateDetail();
+        for (int i = 0; i < planListToShow.size() - 1; i++) {
+            for (int j = 0; j < planListToShow.size() - 1 - i; j++) {
+                String s1 = planListToShow.get(j).getDateDetail();
+                String s2 = planListToShow.get(j + 1).getDateDetail();
 
                 long date1 = s1.contains("?") ? Long.MAX_VALUE : Long.parseLong(s1);
                 long date2 = s2.contains("?") ? Long.MAX_VALUE : Long.parseLong(s2);
 
                 if (date1 > date2) {
-                    TripPlan temp = planList.get(j);
-                    planList.set(j, planList.get(j + 1));
-                    planList.set(j + 1, temp);
+                    TripPlan temp = planListToShow.get(j);
+                    planListToShow.set(j, planListToShow.get(j + 1));
+                    planListToShow.set(j + 1, temp);
                 }
             }
         }
 
-        for (TripPlan tp : planList) {
-            Object[] uidata = tp.getUidata();
+        for (TripPlan tp : planListToShow) {
+            String[] uidata = tp.getUidata();
             listContainer.add(buildScheduleCard(tp, uidata));
             listContainer.add(Box.createVerticalStrut(15));
         }
@@ -168,12 +105,9 @@ public class TravelSearchPane extends JPanel {
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
 
-        sidebar = buildSidebar();
-        sidebar.setPreferredSize(new Dimension(0, 0));
 
         JPanel center = buildScheduleDetailArea();
 
-        contentPanel.add(sidebar, BorderLayout.WEST);
         contentPanel.add(center, BorderLayout.CENTER);
 
         panel.add(header, BorderLayout.NORTH);
@@ -190,7 +124,8 @@ public class TravelSearchPane extends JPanel {
         leftPanel.setOpaque(false);
 
         JPanel searchBar = buildSearchBar();
-        JLabel backIcon = new JLabel(); // 텍스트 제거해서 사각형 공간 제거
+        
+        JLabel backIcon = new JLabel("<-"); // 텍스트 제거해서 사각형 공간 제거
 
         backIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
         backIcon.setForeground(TITLE_COLOR);
@@ -207,27 +142,15 @@ public class TravelSearchPane extends JPanel {
             }
         });
 
-        // JLabel menuIcon = new JLabel("☰");
-        // menuIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
-        // menuIcon.setForeground(TITLE_COLOR);
-
-        // menuIcon.addMouseListener(new MouseAdapter() {
-        // @Override
-        // public void mouseClicked(MouseEvent e) {
-        // toggleSidebar();
-        // }
-        // });
-
         JLabel title = new JLabel("여행가요");
         title.setForeground(TITLE_COLOR);
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
-        ImageIcon raw = new ImageIcon("TripPlanner/src/main/resources/images/logo.png");
+        ImageIcon raw = new ImageIcon(Main.tdm.rootPath+"logo.png");
         Image img = raw.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
         title.setIcon(new ImageIcon(img));
         title.setIconTextGap(10);
 
         leftPanel.add(backIcon);
-        // leftPanel.add(menuIcon);
         leftPanel.add(title);
 
         JButton addScheduleBtn = new JButton("+ 일정 추가");
@@ -291,7 +214,7 @@ public class TravelSearchPane extends JPanel {
     private static final int PLAN_LOC = 3;
     private static final int PLAN_REVIEW = 4;
 
-    private JPanel buildScheduleCard(TripPlan tp, Object[] uidata) {
+    private JPanel buildScheduleCard(TripPlan tp, String[] uidata) {
 
         JPanel card = new JPanel(new BorderLayout(10, 0));
         card.setBackground(CARD_COLOR);
@@ -301,22 +224,22 @@ public class TravelSearchPane extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)));
 
         // uidata의 타입을 안전하게 확인하고 사용
-        Color planColor = (uidata.length > PLAN_COLOR && uidata[PLAN_COLOR] instanceof Color)
-                ? (Color) uidata[PLAN_COLOR]
+        Color planColor = (uidata.length > PLAN_COLOR && uidata[PLAN_COLOR] instanceof String)
+                ? stringToColor(uidata[PLAN_COLOR])
                 : new Color(150, 150, 150);
         String planTitle = (uidata.length > PLAN_TITLE && uidata[PLAN_TITLE] instanceof String)
-                ? (String) uidata[PLAN_TITLE]
+                ? uidata[PLAN_TITLE]
                 : "제목 미정";
         String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] instanceof String)
-                ? (String) uidata[PLAN_DATE]
+                ?  uidata[PLAN_DATE]
                 : "";
         String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] instanceof String)
-                ? (String) uidata[PLAN_TIME]
+                ?  uidata[PLAN_TIME]
                 : "00:00";
-        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] instanceof String) ? (String) uidata[PLAN_LOC]
+        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] instanceof String) ?  uidata[PLAN_LOC]
                 : "위치 미정";
         String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] instanceof String)
-                ? (String) uidata[PLAN_REVIEW]
+                ?  uidata[PLAN_REVIEW]
                 : "설명 없음";
 
         JLabel dot = new JLabel("●");
@@ -333,12 +256,12 @@ public class TravelSearchPane extends JPanel {
         t.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // 🔹 수정>>시간 아이콘 이미지 삽입
-        ImageIcon timeRaw = new ImageIcon("TripPlanner/src/main/resources/images/dal2.png");
+        ImageIcon timeRaw = new ImageIcon(Main.tdm.rootPath+"dal2.png");
         Image timeImg = timeRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon timeIcon = new ImageIcon(timeImg);
 
         // 🔹 위치 아이콘 이미지 삽입
-        ImageIcon locRaw = new ImageIcon("TripPlanner/src/main/resources/images/wich.png");
+        ImageIcon locRaw = new ImageIcon(Main.tdm.rootPath+"wich.png");
         Image locImg = locRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon locIcon = new ImageIcon(locImg);
 
@@ -443,10 +366,29 @@ public class TravelSearchPane extends JPanel {
         searchIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 16));
         searchIcon.setBorder(new EmptyBorder(0, 5, 0, 5));
         searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        searchIcon.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if(searchField.getText().isEmpty()){
+                    planListToShow=null;
+                }
+                else{
+                    planListToShow=(ArrayList<TripPlan>)(Main.tdm.findAllPlans(searchField.getText()));
+                }
+                refreshPlanListUI();
+            }
+        });
 
         searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchIcon, BorderLayout.EAST);
 
         return searchPanel;
+    }
+    private Color stringToColor(String colorRGB){
+        String[] rgb=colorRGB.split(",");
+        int red=Integer.parseInt(rgb[0]);
+        int green=Integer.parseInt(rgb[1]);
+        int blue=Integer.parseInt(rgb[2]);
+        return new Color(red,green,blue);
     }
 }
