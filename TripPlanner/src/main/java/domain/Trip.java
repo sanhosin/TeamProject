@@ -24,6 +24,7 @@ public class Trip implements Manageable,UIData {
     public String getDateDuration(){
         return dateDuration;
     }
+
     @Override
     public void set(Object[] uidata) {
         title=(String)uidata[TRIP_TITLE];
@@ -51,6 +52,7 @@ public class Trip implements Manageable,UIData {
             planMgr.mList.add(tp);
         }
     }
+
     private void changeNUll(){
         if(title.equals("null"))title=null;
         if(imagePath.equals("null"))imagePath=null;
@@ -61,9 +63,10 @@ public class Trip implements Manageable,UIData {
     private String replaceSpace(String s){
         return s.replaceAll("_"," ");
     }
+
     @Override
     public void print() {
-        
+        // 구현 내용 없음
     }
 
     @Override
@@ -101,16 +104,15 @@ public class Trip implements Manageable,UIData {
             dateDuration="미정";
             return;
         }
-        // 메인 화면 일정 순으로 정렬 (여행 추가에 일정을 입력 하는 창을 만들었다는 가정하에 만들어서 오류가 발생할 수 있음)
-        
 
+        // 정렬 로직 (순서 기반 정렬)
         for(int i = 0; i < list.size()-1; i ++){
             for(int j = 0; j < list.size()-1-i; j ++){
 
                 String s1 = list.get(j).getDateDetail();
                 String s2 = list.get(j + 1).getDateDetail();
 
-                long date1; 
+                long date1;
                 long date2;
 
                 if(s1.contains("?")|| !isAllDigit(s1)){
@@ -136,8 +138,7 @@ public class Trip implements Manageable,UIData {
             }
         }
 
-
-
+        // 위치 및 기간 계산
         int startOfDate=999999;
         int endOfDate=0;
         String locations="";
@@ -201,18 +202,8 @@ public class Trip implements Manageable,UIData {
         target=buff.toString();
         return target;
     }
+
     public String getImagePath() {
         return imagePath;
     }
-
-    private String tripImagePath;
-
-    public String getTripImagePath() {
-        return this.tripImagePath;
-    }
-
-    public void setTripImagePath(String path) {
-        this.tripImagePath = path;
-    }
-
 }

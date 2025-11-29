@@ -13,6 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import static main.java.GUImain.MainPane.DestinationItem;
+import main.java.domain.Trip;
+
 public class AddTripDialog extends JDialog {
 
     private final String CUSTOM_FONT_NAME = "맑은 고딕";
@@ -180,39 +183,67 @@ public class AddTripDialog extends JDialog {
 
         panel.add(initialUploadContent, BorderLayout.CENTER);
 
-        // 이미지 미리보기 라벨 초기화 (처음에는 panel에 안 붙여놓기)
+        // 이미지 미리보기 라벨 초기화
         imagePreviewLabel = new JLabel();
         imagePreviewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        //수정: 미리보기 라벨을 패널에 추가하고 초기에는 숨김
+        imagePreviewLabel.setVisible(false);
+        panel.add(imagePreviewLabel, BorderLayout.CENTER);
 
         // 클릭시 컴퓨터에서 이미지 찾아서 업로드
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
-                // 업로드 누르면 바로 사진을 찾기 쉽도록 변경
                 String userHome = System.getProperty("user.home");
                 File Img_File = new File(userHome, "OneDrive/사진");
-                fileChooser.setCurrentDirectory(Img_File);
+                if (Img_File.exists()) {
+                    fileChooser.setCurrentDirectory(Img_File);
+                }
 
                 fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일",
-                                                                     "jpg", "png", "jpeg", "gif"));
+                        "jpg", "png", "jpeg", "gif"));
 
                 if (fileChooser.showOpenDialog(AddTripDialog.this) == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     selectedImagePath = selectedFile.getAbsolutePath();
 
-                    panel.removeAll();
+                    try {
+                        ImageIcon icon = new ImageIcon(selectedImagePath);
 
-                    ImageIcon icon = new ImageIcon(selectedImagePath);
-                    Image img = icon.getImage().getScaledInstance(panel.getWidth(), panel.getHeight(),
-                            Image.SCALE_SMOOTH);
+                        // 패널의 실제 크기를 사용하여 스케일링 크기 결정
+                        int targetWidth = panel.getWidth() > 0 ? panel.getWidth() : panel.getPreferredSize().width;
+                        int targetHeight = panel.getHeight() > 0 ? panel.getHeight() : panel.getPreferredSize().height;
 
-                    imagePreviewLabel.setIcon(new ImageIcon(img));
-                    imagePreviewLabel.setVisible(true);
-                    initialUploadContent.setVisible(false);
+                        Image originalImage = icon.getImage();
 
-                    panel.revalidate();
-                    panel.repaint();
+                        if (originalImage.getWidth(null) == -1) {
+                            throw new Exception("File is not a valid image or could not be read.");
+                        }
+
+                        Image img = originalImage.getScaledInstance(
+                                targetWidth,
+                                targetHeight,
+                                Image.SCALE_SMOOTH);
+
+                        // 미리보기 업데이트
+                        imagePreviewLabel.setIcon(new ImageIcon(img));
+                        imagePreviewLabel.setVisible(true);
+                        initialUploadContent.setVisible(false); // 초기 안내 문구 숨김
+
+                        panel.revalidate();
+                        panel.repaint();
+
+                    } catch (Exception ex) {
+                        System.err.println("Failed to load image for preview: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(AddTripDialog.this, "선택한 파일을 로드할 수 없습니다.", "이미지 로드 오류", JOptionPane.ERROR_MESSAGE);
+
+                        // 로딩 실패 시 안내 문구 복구 및 경로 초기화
+                        imagePreviewLabel.setVisible(false);
+                        initialUploadContent.setVisible(true);
+                        selectedImagePath = null;
+                    }
                 }
             }
         });
@@ -251,16 +282,31 @@ public class AddTripDialog extends JDialog {
                             JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                Object[] uidata = { title, selectedImagePath };
 
-                Main.tdm.addTrip(uidata);
+                // DestinationItem에 selectedImagePath를 포함하여 생성
+                DestinationItem newTrip = new DestinationItem(
+                        title,
+                        "위치 미정",
+                        "새로 추가된 여행",
+                        0.0,
+                        selectedImagePath != null ? selectedImagePath : "default.jpg",
+                        "미정",
+                        "미정",
+                        new String[]{"계획 중"}
+                );
+
+                mainPane.addTrip(newTrip);
                 mainPane.refreshTripListUI();
                 dispose();
             }
         });
 
+
         panel.add(cancelBtn);
         panel.add(addBtn);
         return panel;
+    }
+    public AddTripDialog(Frame owner, String fontName, MainPane mainPane, Trip toModify) {
+        // ... 수정 데이터 초기화 로직 ...
     }
 }

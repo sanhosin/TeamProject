@@ -11,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
+import java.awt.image.BufferedImage;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -38,6 +40,28 @@ public class MainPane extends JPanel {
     private JPanel listContainer;
     private TravelSearchPane travelSearchPanelRef;
     private ArrayList<Trip> tripListToShow=null;
+
+    public static class DestinationItem {
+        String name;
+        String country;
+        String description;
+        double rating;
+        String imagePath;
+        String startDate;
+        String endDate;
+        String[] tags;
+
+        public DestinationItem(String name, String country, String description, double rating, String imagePath, String startDate, String endDate, String[] tags) {
+            this.name = name;
+            this.country = country;
+            this.description = description;
+            this.rating = rating;
+            this.imagePath = imagePath;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.tags = tags;
+        }
+    }
 
     public MainPane(JPanel root, CardLayout card) {
         this.root = root;
@@ -177,6 +201,18 @@ public class MainPane extends JPanel {
         return itemPanel;
     }
 
+    public void addTrip(DestinationItem item) {
+        Object[] tripData = new Object[2];
+
+        tripData[0] = item.name;
+        tripData[1] = item.imagePath;
+
+        Main.tdm.addTrip(tripData);
+
+        refreshTripListUI();
+    }
+
+
     public void refreshTripListUI() {
         if (listContainer == null)
             return;
@@ -290,6 +326,7 @@ public class MainPane extends JPanel {
     private JPanel buildTripCard(Trip t) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
 
+        // 카드 크기 상수 (가로/세로 비율 유지)
         final int CARD_HEIGHT = 120;
         final int IMAGE_WIDTH = 200;
         final int IMAGE_HEIGHT = 150;
@@ -328,7 +365,7 @@ public class MainPane extends JPanel {
         String[] uidata = t.getUidata();
         String tripTitle = uidata[Trip.TRIP_TITLE];
 
-        String tripImgPath = t.getTripImagePath();
+        String tripImgPath = t.getImagePath();
 
         // 🔹 imageLabel 에 아이콘 세팅
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -336,16 +373,33 @@ public class MainPane extends JPanel {
 
         if (tripImgPath != null && !tripImgPath.isEmpty() && !tripImgPath.equals("default.jpg")) {
             try {
-                ImageIcon rawIcon = new ImageIcon(tripImgPath);
-                Image scaledImg = rawIcon.getImage().getScaledInstance(
-                        IMAGE_WIDTH,
-                        IMAGE_HEIGHT,
-                        Image.SCALE_SMOOTH);
-                imageLabel.setIcon(new ImageIcon(scaledImg));
+                ImageIcon rawIcon;
+
+                if (new java.io.File(tripImgPath).isAbsolute()) {
+                    rawIcon = new ImageIcon(tripImgPath);
+                } else {
+                    // 비정상적이거나 상대 경로일 경우 rootPath를 붙여 시도
+                    rawIcon = new ImageIcon(Main.tdm.rootPath + tripImgPath);
+                }
+
+                Image originalImage = rawIcon.getImage();
+
+                // 이미지 로딩 성공 확인
+                if (originalImage.getWidth(null) > 0 && originalImage.getHeight(null) > 0) {
+                    Image scaledImg = originalImage.getScaledInstance(
+                            IMAGE_WIDTH,
+                            IMAGE_HEIGHT,
+                            Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(scaledImg));
+                } else {
+                    System.err.println("Warning: Image data not loaded for path: " + tripImgPath);
+                }
+
             } catch (Exception ex) {
-                System.err.println("Error loading image from path: " + tripImgPath);
+                System.err.println("Error loading image from path: " + tripImgPath + " -> " + ex.getMessage());
             }
         } else {
+            // 기본 이미지 로직 사용
             ImageIcon rawIcon = new ImageIcon(Main.tdm.rootPath + "default.png");
             Image scaledImg = rawIcon.getImage().getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImg));
@@ -398,6 +452,16 @@ public class MainPane extends JPanel {
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         controlPanel.setOpaque(false);
 
+        JButton editBtn = new JButton("✏");
+        editBtn.setFocusPainted(false);
+        editBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        editBtn.addActionListener(e -> {
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            AddTripDialog dialog = new AddTripDialog(parentFrame, CUSTOM_FONT_NAME, this, t);
+            dialog.setVisible(true);
+        });
+
         JButton deleteBtn = new JButton("🗑");
         deleteBtn.setFocusPainted(false);
         deleteBtn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -416,6 +480,7 @@ public class MainPane extends JPanel {
 
         });
 
+        controlPanel.add(editBtn);
         controlPanel.add(deleteBtn);
         card.add(controlPanel, BorderLayout.EAST);
 
@@ -479,4 +544,7 @@ public class MainPane extends JPanel {
         return searchPanel;
     }
 
+    private ImageIcon loadImage(String imagePath, int width, int height) {
+        return new ImageIcon(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+    }
 }

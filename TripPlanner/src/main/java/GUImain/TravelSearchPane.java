@@ -115,7 +115,7 @@ public class TravelSearchPane extends JPanel {
         leftPanel.setOpaque(false);
 
         JPanel searchBar = buildSearchBar();
-        
+
         JLabel backIcon = new JLabel("<-"); // 텍스트 제거해서 사각형 공간 제거
 
         backIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
@@ -213,25 +213,15 @@ public class TravelSearchPane extends JPanel {
         card.setBorder(new CompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
                 new EmptyBorder(15, 15, 15, 15)));
-
-        // uidata의 타입을 안전하게 확인하고 사용
-        Color planColor = (uidata.length > PLAN_COLOR && uidata[PLAN_COLOR] instanceof String)
+        Color planColor = (uidata.length > PLAN_COLOR && uidata[PLAN_COLOR] != null)
                 ? stringToColor(uidata[PLAN_COLOR])
                 : new Color(150, 150, 150);
-        String planTitle = (uidata.length > PLAN_TITLE && uidata[PLAN_TITLE] instanceof String)
-                ? uidata[PLAN_TITLE]
-                : "제목 미정";
-        String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] instanceof String)
-                ?  uidata[PLAN_DATE]
-                : "";
-        String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] instanceof String)
-                ?  uidata[PLAN_TIME]
-                : "00:00";
-        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] instanceof String) ?  uidata[PLAN_LOC]
-                : "위치 미정";
-        String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] instanceof String)
-                ?  uidata[PLAN_REVIEW]
-                : "설명 없음";
+
+        String planTitle = (uidata.length > PLAN_TITLE && uidata[PLAN_TITLE] != null) ? uidata[PLAN_TITLE] : "제목 미정";
+        String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] != null) ?  uidata[PLAN_DATE] : "";
+        String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] != null) ?  uidata[PLAN_TIME] : "00:00";
+        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] != null) ?  uidata[PLAN_LOC] : "위치 미정";
+        String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] != null) ?  uidata[PLAN_REVIEW] : "설명 없음";
 
         JLabel dot = new JLabel("●");
         dot.setForeground(planColor);
@@ -376,11 +366,29 @@ public class TravelSearchPane extends JPanel {
 
         return searchPanel;
     }
-    private Color stringToColor(String colorRGB){
-        String[] rgb=colorRGB.split(",");
-        int red=Integer.parseInt(rgb[0]);
-        int green=Integer.parseInt(rgb[1]);
-        int blue=Integer.parseInt(rgb[2]);
-        return new Color(red,green,blue);
+
+    private Color stringToColor(String colorRGB) {
+        try {
+            // 입력 형식: "R,G,B" (예: "255,102,178")
+            String[] rgb = colorRGB.split(",");
+            if (rgb.length != 3) {
+                System.err.println("Color format error: Expected R,G,B but got " + colorRGB);
+                return new Color(150, 150, 150); // 기본 회색 반환
+            }
+            int red = Integer.parseInt(rgb[0].trim());
+            int green = Integer.parseInt(rgb[1].trim());
+            int blue = Integer.parseInt(rgb[2].trim());
+
+            // 값 범위 확인 (0-255)
+            if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
+                System.err.println("Color range error: Values out of 0-255 range: " + colorRGB);
+                return new Color(150, 150, 150);
+            }
+
+            return new Color(red, green, blue);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            System.err.println("Color parsing error: Cannot convert string to color. Input: " + colorRGB);
+            return new Color(150, 150, 150); // 파싱 실패 시 기본 회색 반환
+        }
     }
 }
