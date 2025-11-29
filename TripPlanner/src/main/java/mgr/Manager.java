@@ -6,12 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import main.java.GUImain.Main;
 
 public class Manager<T extends Manageable> {
     public ArrayList<T> mList=new ArrayList<>();
 
-    // main.java.mgr.Manager.java 파일 내, readAll 메소드 수정
     public void readAll(String filename, Factory<T> fac){
         Scanner filein = null;
         
@@ -81,7 +79,7 @@ public class Manager<T extends Manageable> {
             filein=new Scanner(new File(filePath));
         }
         catch(FileNotFoundException e){
-           // System.out.println("파일 경로 잘못됨: "+filePath);
+           System.out.println("파일 경로 잘못됨: "+filePath);
         }
         return filein;
     }

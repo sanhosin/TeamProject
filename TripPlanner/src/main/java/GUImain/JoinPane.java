@@ -1,11 +1,9 @@
 package main.java.GUImain;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.plaf.basic.BasicTextFieldUI;
 
 public class JoinPane extends JPanel {
     JPanel root;
@@ -60,7 +58,7 @@ public class JoinPane extends JPanel {
         // 1. 닉네임 필드
         JLabel nicknameLabel = new JLabel("닉네임");
         nicknameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 15));
-        JTextField nicknameField = new PlaceholderTextField("닉네임을 입력하세요");
+        JTextField nicknameField = new JTextField();
         stylizeTextField(nicknameField);
         nicknameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         nicknameField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -68,7 +66,7 @@ public class JoinPane extends JPanel {
         // 2. 아이디 필드
         JLabel idLabel = new JLabel("아이디");
         idLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 15));
-        JTextField idField = new PlaceholderTextField("사용할 아이디를 입력하세요");
+        JTextField idField = new JTextField();
         stylizeTextField(idField);
         idLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         idField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -76,7 +74,7 @@ public class JoinPane extends JPanel {
         // 3. 비밀번호 필드
         JLabel pwLabel = new JLabel("비밀번호");
         pwLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 15));
-        JPasswordField pwField = new PlaceholderPasswordField("비밀번호를 입력하세요");
+        JPasswordField pwField = new JPasswordField();
         stylizeTextField(pwField);
         pwLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pwField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -163,22 +161,5 @@ public class JoinPane extends JPanel {
         field.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
     }
 
-    // Placeholder를 위한 커스텀 JTextField (코드 간소화를 위해 paintComponent는 생략)
-    class PlaceholderTextField extends JTextField {
-        private String placeholder;
-
-        public PlaceholderTextField(String placeholder) {
-            this.placeholder = placeholder;
-        }
-    }
-
-    // Placeholder를 위한 커스텀 JPasswordField (코드 간소화를 위해 paintComponent는 생략)
-    class PlaceholderPasswordField extends JPasswordField {
-        private String placeholder;
-
-        public PlaceholderPasswordField(String placeholder) {
-            this.placeholder = placeholder;
-            setEchoChar((char) 0);
-        }
-    }
+   
 }

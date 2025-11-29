@@ -11,8 +11,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
-import java.awt.image.BufferedImage;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -463,7 +461,8 @@ public class MainPane extends JPanel {
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                if(searchField.getText().isEmpty()){
+                String searchFieldText=searchField.getText();
+                if(searchFieldText.isEmpty()||searchFieldText.equals("검색어를 입력하세요")){
                     tripListToShow=null;
                 }
                 else{
@@ -480,7 +479,4 @@ public class MainPane extends JPanel {
         return searchPanel;
     }
 
-    private ImageIcon loadImage(String imagePath, int width, int height) {
-        return new ImageIcon(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
-    }
 }

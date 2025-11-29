@@ -9,3 +9,4 @@ abcde 6666 6번데이터
 master master_master 마스터
 tester tester_password 테스터
 frozn4770 1 sanhosin
+id pwd nick

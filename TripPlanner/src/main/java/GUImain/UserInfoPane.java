@@ -21,7 +21,7 @@ public class UserInfoPane extends JPanel {
         setLayout(new GridBagLayout()); 
         setBackground(BG_COLOR);
 
-        // ★★★ [핵심 해결책] 화면이 보일 때마다 데이터를 새로고침하는 이벤트 추가 ★★★
+        //화면이 보일 때마다 데이터를 새로고침하는 이벤트 추가
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
@@ -124,12 +124,12 @@ public class UserInfoPane extends JPanel {
         add(contentCard);
     }
 
-    // ★★★ 데이터를 최신으로 불러오는 함수 ★★★
+    // 데이터를 최신으로 불러오는 함수
     private void refreshData() {
         User user = Main.tdm.getLoginedUser();
         if (user != null) {
             nickField.setText(user.getNick());
-            idField.setText(user.getID()); // 이제 아이디가 보일 겁니다!
+            idField.setText(user.getID()); 
             pwField.setText(user.getPwd());
         }
     }
@@ -158,7 +158,7 @@ public class UserInfoPane extends JPanel {
         } else {
             // 수정 불가 시 스타일
             field.setBackground(new Color(245, 245, 245)); 
-            field.setForeground(Color.DARK_GRAY); // 글자 진하게
+            field.setForeground(Color.DARK_GRAY); 
             field.setEditable(false);
             field.setFocusable(false);
         }

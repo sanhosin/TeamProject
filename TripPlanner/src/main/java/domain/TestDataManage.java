@@ -9,7 +9,6 @@ import java.util.List;
 
 import main.java.mgr.Factory;
 import main.java.mgr.Manager;
-import main.java.GUImain.MainPane;
 
 public class TestDataManage {
 

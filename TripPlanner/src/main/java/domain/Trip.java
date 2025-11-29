@@ -63,8 +63,7 @@ public class Trip implements Manageable,UIData {
     }
     @Override
     public void print() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'print'");
+        
     }
 
     @Override

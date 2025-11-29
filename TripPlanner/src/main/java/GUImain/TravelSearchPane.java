@@ -5,10 +5,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -27,15 +24,9 @@ public class TravelSearchPane extends JPanel {
     private final Color BORDER_COLOR = new Color(200, 200, 200);
     private final Color TITLE_COLOR = new Color(40, 60, 90);
     private final Color BLUE_ACCENT = new Color(80, 140, 255);
-    private final Color DOT_COLOR = new Color(255, 60, 60);
 
     private JPanel mainPanel;
     private JPanel contentPanel;
-    private JPanel sidebar;
-    private boolean isSidebarVisible = false;
-    private final int SLIDE_WIDTH = 180;
-    private final int ANIMATION_STEPS = 20;
-    private final int ANIMATION_DELAY_MS = 20;
 
     private ArrayList<TripPlan> planListToShow=null;
 
@@ -134,7 +125,7 @@ public class TravelSearchPane extends JPanel {
         backIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // ⭐ 수정: null을 Trip 타입으로 명시적 캐스팅하여 모호성 제거 (NPE 방지)
+                //  null을 Trip 타입으로 명시적 캐스팅하여 모호성 제거 (NPE 방지)
                 Main.tdm.setCurrentTrip((main.java.domain.Trip) null);
 
                 card.show(root, "메인");
@@ -255,32 +246,32 @@ public class TravelSearchPane extends JPanel {
         t.setForeground(TITLE_COLOR);
         t.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // 🔹 수정>>시간 아이콘 이미지 삽입
+        // 수정>>시간 아이콘 이미지 삽입
         ImageIcon timeRaw = new ImageIcon(Main.tdm.rootPath+"dal2.png");
         Image timeImg = timeRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon timeIcon = new ImageIcon(timeImg);
 
-        // 🔹 위치 아이콘 이미지 삽입
+        // 위치 아이콘 이미지 삽입
         ImageIcon locRaw = new ImageIcon(Main.tdm.rootPath+"wich.png");
         Image locImg = locRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon locIcon = new ImageIcon(locImg);
 
-        // 🔹 라벨 하나만 사용해서, 아이콘 + 글자 조합
-        // 🔹 날짜/시간 라벨
+        // 라벨 하나만 사용해서, 아이콘 + 글자 조합
+        // 날짜/시간 라벨
         JLabel dateLabel = new JLabel(planDate + "  " + planTime);
         dateLabel.setIcon(timeIcon); // 달력(또는 시간) 이미지
         dateLabel.setIconTextGap(4);
         dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         dateLabel.setForeground(new Color(90, 90, 110));
 
-        // 🔹 위치 라벨
+        // 위치 라벨
         JLabel locLabel = new JLabel("  " + planLoc); // 앞에 공백 하나
         locLabel.setIcon(locIcon); // 위치 이미지
         locLabel.setIconTextGap(4);
         locLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         locLabel.setForeground(new Color(90, 90, 110));
 
-        // 🔹 둘을 한 줄에 넣을 패널
+        // 둘을 한 줄에 넣을 패널
         JPanel dtPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         dtPanel.setOpaque(false);
         dtPanel.add(dateLabel);
@@ -296,7 +287,7 @@ public class TravelSearchPane extends JPanel {
 
         inner.add(t);
         inner.add(Box.createVerticalStrut(6));
-        inner.add(dtPanel); // ✅ 새로 만든 패널
+        inner.add(dtPanel); // 새로 만든 패널
         inner.add(d);
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -369,7 +360,8 @@ public class TravelSearchPane extends JPanel {
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                if(searchField.getText().isEmpty()){
+                String searchFieldText=searchField.getText();
+                if(searchFieldText.isEmpty()||searchFieldText.equals("검색어를 입력하세요")){
                     planListToShow=null;
                 }
                 else{

@@ -1,8 +1,7 @@
 package main.java.GUImain;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 import javax.swing.*;
 import javax.swing.FocusManager;
@@ -111,7 +110,7 @@ public class LoginPane extends JPanel{
         joinBtn.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
         joinBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 15));
 
-        // 🚨 수정된 부분: 회원가입 버튼 클릭 시 "회원가입" 화면으로 전환
+        // 수정된 부분: 회원가입 버튼 클릭 시 "회원가입" 화면으로 전환
         joinBtn.addActionListener(e -> {
             card.show(root, "회원가입");
         });

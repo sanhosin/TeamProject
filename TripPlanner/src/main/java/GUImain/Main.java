@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.Scanner;
 import javax.swing.*;
 import main.java.domain.TestDataManage;
-// Manager와 domain 클래스는 현재 GUImain.Main에서 직접 사용되지 않아 import 제거 (clean code)
 
 public class Main {
     // TestDataManage는 static 필드로 선언되어 초기화 시 파일 로드를 시도합니다.
@@ -27,7 +26,6 @@ public class Main {
     TravelSearchPane travelSearchPanel; // 여행지 검색 화면 (새로 추가)
     JoinPane joinPanel; // 회원가입 화면
 
-    // JPanel searchPanel, schedulePanel; // 사용되지 않아 제거
 
     void mymain() {
         // 1. MainPane을 먼저 인스턴스화합니다.
@@ -47,7 +45,7 @@ public class Main {
 
     void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(800, 600));
+        frame.setMinimumSize(new Dimension(800, 900));
         frame.getContentPane().add(root);
         frame.getContentPane().setBackground(new Color(220, 235, 255));
         root.setOpaque(false);
@@ -81,7 +79,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // System.out.println(new File(".").getAbsolutePath()); // 경로 확인용 코드 제거
 
         Main main = new Main();
         main.mymain();
