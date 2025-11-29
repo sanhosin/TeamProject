@@ -11,8 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
-import java.awt.image.BufferedImage;
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -41,27 +40,7 @@ public class MainPane extends JPanel {
     private TravelSearchPane travelSearchPanelRef;
     private ArrayList<Trip> tripListToShow=null;
 
-    public static class DestinationItem {
-        String name;
-        String country;
-        String description;
-        double rating;
-        String imagePath;
-        String startDate;
-        String endDate;
-        String[] tags;
-
-        public DestinationItem(String name, String country, String description, double rating, String imagePath, String startDate, String endDate, String[] tags) {
-            this.name = name;
-            this.country = country;
-            this.description = description;
-            this.rating = rating;
-            this.imagePath = imagePath;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.tags = tags;
-        }
-    }
+    
 
     public MainPane(JPanel root, CardLayout card) {
         this.root = root;
@@ -201,18 +180,6 @@ public class MainPane extends JPanel {
         return itemPanel;
     }
 
-    public void addTrip(DestinationItem item) {
-        Object[] tripData = new Object[2];
-
-        tripData[0] = item.name;
-        tripData[1] = item.imagePath;
-
-        Main.tdm.addTrip(tripData);
-
-        refreshTripListUI();
-    }
-
-
     public void refreshTripListUI() {
         if (listContainer == null)
             return;
@@ -327,10 +294,10 @@ public class MainPane extends JPanel {
         JPanel card = new JPanel(new BorderLayout(10, 0));
 
         // 카드 크기 상수 (가로/세로 비율 유지)
-        final int CARD_HEIGHT = 120;
+        final int CARD_HEIGHT = 170;
         final int IMAGE_WIDTH = 200;
-        final int IMAGE_HEIGHT = 150;
-        final int CARD_INNER_MARGIN = 12;
+        final int IMAGE_HEIGHT = 170;
+        final int CARD_INNER_MARGIN = 3;
 
         // 최대 크기 설정으로 늘어남 방지 (세로 고정)
         card.setPreferredSize(new Dimension(0, CARD_HEIGHT));
@@ -339,7 +306,7 @@ public class MainPane extends JPanel {
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(CARD_INNER_MARGIN, 10, CARD_INNER_MARGIN, 10)));
+                new EmptyBorder(CARD_INNER_MARGIN,CARD_INNER_MARGIN, CARD_INNER_MARGIN, 10)));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -357,7 +324,7 @@ public class MainPane extends JPanel {
 
         JPanel imagePanel = new JPanel(new BorderLayout());
         imagePanel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
-        imagePanel.setBackground(new Color(220, 220, 220));
+        imagePanel.setBackground(CARD_COLOR);
 
         JLabel imageLabel = new JLabel();
         imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
@@ -365,7 +332,7 @@ public class MainPane extends JPanel {
         String[] uidata = t.getUidata();
         String tripTitle = uidata[Trip.TRIP_TITLE];
 
-        String tripImgPath = t.getImagePath();
+        String tripImgPath = uidata[Trip.TRIP_IMG];
 
         // 🔹 imageLabel 에 아이콘 세팅
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -414,42 +381,43 @@ public class MainPane extends JPanel {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setOpaque(false);
 
-        textPanel.setBorder(new EmptyBorder(0, 5, 0, 5));
+        textPanel.setBorder(new EmptyBorder(0, 15, 0, 5));
 
         JLabel nameLabel = new JLabel(tripTitle);
-        nameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 14));
+        nameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 16));
         nameLabel.setForeground(TITLE_COLOR);
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         String toLocationLabel = (t.getPlanList().isEmpty()) ? "미정" : t.getLocationDetail();
 
         ImageIcon pinRaw = new ImageIcon(Main.tdm.rootPath+"wich.png");
-        Image pinScaled = pinRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+        Image pinScaled = pinRaw.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
         ImageIcon pinIcon = new ImageIcon(pinScaled);
 
         JLabel locationLabel = new JLabel(" " + toLocationLabel); // 텍스트만
         locationLabel.setIcon(pinIcon);
         locationLabel.setIconTextGap(2); // 이미지와 텍스트 간격 조절
 
-        locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 10));
+        locationLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         locationLabel.setForeground(new Color(90, 90, 110));
         locationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         String toDateLabel = (t.getPlanList().isEmpty()) ? "미정" : t.getDateDuration();
         JLabel dateLabel = new JLabel(toDateLabel);
-        dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 10));
+        dateLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         dateLabel.setForeground(new Color(90, 90, 110));
         dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        textPanel.add(Box.createVerticalStrut(20));
         textPanel.add(nameLabel);
-        textPanel.add(Box.createVerticalStrut(2));
+        textPanel.add(Box.createVerticalStrut(10));
         textPanel.add(locationLabel);
-        textPanel.add(Box.createVerticalStrut(2));
+        textPanel.add(Box.createVerticalStrut(3));
         textPanel.add(dateLabel);
 
         card.add(textPanel, BorderLayout.CENTER);
 
-        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         controlPanel.setOpaque(false);
 
         JButton editBtn = new JButton("✏");
@@ -544,7 +512,4 @@ public class MainPane extends JPanel {
         return searchPanel;
     }
 
-    private ImageIcon loadImage(String imagePath, int width, int height) {
-        return new ImageIcon(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
-    }
 }
