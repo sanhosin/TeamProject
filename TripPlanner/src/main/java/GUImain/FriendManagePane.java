@@ -44,23 +44,37 @@ public class FriendManagePane extends JPanel {
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         rightPanel.setBackground(Color.WHITE);
 
-        // [New] 받은 요청 버튼 (편지 봉투 모양)
-        requestBoxBtn = new JButton("📩");
-        requestBoxBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 16));
-        requestBoxBtn.setForeground(MAIN_BLUE);
+        // 수정>> 이미지 삽입
+        ImageIcon reqRaw = new ImageIcon(Main.tdm.rootPath + "mails.png"); // mail.png 준비
+        Image reqImg = reqRaw.getImage().getScaledInstance(28, 20, Image.SCALE_SMOOTH);
+        requestBoxBtn = new JButton(new ImageIcon(reqImg));
+
+        requestBoxBtn.setPreferredSize(new Dimension(40, 32)); // 클릭 영역 조금 넓게
         requestBoxBtn.setBorderPainted(false);
         requestBoxBtn.setContentAreaFilled(false);
+        requestBoxBtn.setFocusPainted(false);
         requestBoxBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         requestBoxBtn.setToolTipText("받은 친구 요청 확인");
+
+        requestBoxBtn.setText("");
+        requestBoxBtn.setMargin(new Insets(0, 0, 0, 0));
+
         requestBoxBtn.addActionListener(e -> showRequestBoxDialog());
 
-        // 친구 추가 버튼
-        JButton addBtn = new JButton(" + ");
-        addBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 20));
-        addBtn.setForeground(MAIN_BLUE);
+        // 수정>> 친구 추가 버튼
+        ImageIcon addRaw = new ImageIcon(Main.tdm.rootPath + "chinchu.png"); // + 아이콘 파일
+        Image addImg = addRaw.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        JButton addBtn = new JButton(new ImageIcon(addImg));
+
+        addBtn.setPreferredSize(new Dimension(32, 32));
         addBtn.setBorderPainted(false);
         addBtn.setContentAreaFilled(false);
+        addBtn.setFocusPainted(false);
         addBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        addBtn.setText("");
+        addBtn.setMargin(new Insets(0, 0, 0, 0));
+
         addBtn.addActionListener(e -> showSearchDialog());
 
         rightPanel.add(requestBoxBtn);
@@ -82,7 +96,7 @@ public class FriendManagePane extends JPanel {
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(BG_COLOR);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        
+
         add(scrollPane, BorderLayout.CENTER);
 
         // 화면 갱신 리스너
@@ -98,10 +112,10 @@ public class FriendManagePane extends JPanel {
     private void refreshFriendList() {
         listContainer.removeAll();
         User currentUser = Main.tdm.getLoginedUser();
-        
+
         if (currentUser != null) {
             ArrayList<User> friends = currentUser.getFriendsList();
-            
+
             if (friends == null || friends.isEmpty()) {
                 JLabel emptyLabel = new JLabel("등록된 친구가 없습니다.");
                 emptyLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 14));
@@ -123,22 +137,24 @@ public class FriendManagePane extends JPanel {
     // 요청 버튼 상태 업데이트 (요청이 있으면 빨간점 표시 같은 효과)
     private void updateRequestBtnState() {
         User me = Main.tdm.getLoginedUser();
+
         if (me != null && !me.getReceivedRequests().isEmpty()) {
-            requestBoxBtn.setText("📩 (" + me.getReceivedRequests().size() + ")");
-            requestBoxBtn.setForeground(Color.RED); // 요청이 있으면 빨간색
+            int cnt = me.getReceivedRequests().size();
+            // 텍스트 대신 툴팁만 바꿔주기
+            requestBoxBtn.setToolTipText("받은 친구 요청 " + cnt + "개");
         } else {
-            requestBoxBtn.setText("📩");
-            requestBoxBtn.setForeground(MAIN_BLUE);
+            requestBoxBtn.setToolTipText("받은 친구 요청 없음");
         }
+
+        requestBoxBtn.setText(null);
     }
 
     private JPanel createFriendCard(User friend, User me) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(230, 230, 230), 1, true),
-            new EmptyBorder(15, 20, 15, 20)
-        ));
+                BorderFactory.createLineBorder(new Color(230, 230, 230), 1, true),
+                new EmptyBorder(15, 20, 15, 20)));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
         JPanel textPanel = new JPanel();
@@ -147,7 +163,7 @@ public class FriendManagePane extends JPanel {
 
         JLabel nameLabel = new JLabel(friend.getNick());
         nameLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 16));
-        
+
         JLabel idLabel = new JLabel("@" + friend.getID());
         idLabel.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 13));
         idLabel.setForeground(Color.GRAY);
@@ -164,10 +180,10 @@ public class FriendManagePane extends JPanel {
         deleteBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         deleteBtn.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                friend.getNick() + "님을 삭제하시겠습니까?", "확인", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    friend.getNick() + "님을 삭제하시겠습니까?", "확인", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                me.removeFriend(friend); 
+                me.removeFriend(friend);
                 refreshFriendList();
             }
         });
@@ -201,16 +217,17 @@ public class FriendManagePane extends JPanel {
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnPanel.setBackground(Color.WHITE);
         btnPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+
         JButton searchBtn = new JButton("요청 보내기"); // 버튼 이름 변경
         searchBtn.setBackground(MAIN_BLUE);
         searchBtn.setForeground(Color.WHITE);
 
         searchBtn.addActionListener(e -> {
             String keyword = searchField.getText().trim();
-            if (keyword.isEmpty()) return;
+            if (keyword.isEmpty())
+                return;
 
-            User found = Main.tdm.findUser(keyword); 
+            User found = Main.tdm.findUser(keyword);
             User me = Main.tdm.getLoginedUser();
 
             if (found == null) {
@@ -222,14 +239,14 @@ public class FriendManagePane extends JPanel {
             } else if (found.hasReceivedRequestFrom(me)) { // 이미 요청 보냈는지 확인
                 JOptionPane.showMessageDialog(dialog, "이미 요청을 보냈습니다. 수락 대기 중입니다.");
             } else {
-                int choice = JOptionPane.showConfirmDialog(dialog, 
-                    "'" + found.getNick() + "'님에게 친구 요청을 보내시겠습니까?", 
-                    "친구 요청", JOptionPane.YES_NO_OPTION);
-                
+                int choice = JOptionPane.showConfirmDialog(dialog,
+                        "'" + found.getNick() + "'님에게 친구 요청을 보내시겠습니까?",
+                        "친구 요청", JOptionPane.YES_NO_OPTION);
+
                 if (choice == JOptionPane.YES_OPTION) {
                     // ★ 핵심: 바로 추가가 아니라 요청 보내기
-                    found.receiveFriendRequest(me); 
-                    
+                    found.receiveFriendRequest(me);
+
                     dialog.dispose();
                     JOptionPane.showMessageDialog(this, "요청을 보냈습니다!");
                 }
@@ -285,7 +302,7 @@ public class FriendManagePane extends JPanel {
                 accBtn.setBackground(MAIN_BLUE);
                 accBtn.setForeground(Color.WHITE);
                 accBtn.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 12));
-                
+
                 JButton rejBtn = new JButton("거절");
                 rejBtn.setBackground(Color.LIGHT_GRAY);
                 rejBtn.setForeground(Color.BLACK);
@@ -313,7 +330,7 @@ public class FriendManagePane extends JPanel {
 
                 item.add(name, BorderLayout.CENTER);
                 item.add(btns, BorderLayout.EAST);
-                
+
                 requestListPanel.add(item);
                 requestListPanel.add(Box.createVerticalStrut(10));
             }

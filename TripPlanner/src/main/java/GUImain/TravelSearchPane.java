@@ -28,7 +28,7 @@ public class TravelSearchPane extends JPanel {
     private JPanel mainPanel;
     private JPanel contentPanel;
 
-    private ArrayList<TripPlan> planListToShow=null;
+    private ArrayList<TripPlan> planListToShow = null;
 
     JPanel listContainer;
     JLabel tripTitle;
@@ -51,7 +51,7 @@ public class TravelSearchPane extends JPanel {
     public void refreshPlanListUI() {
         listContainer.removeAll();
 
-        if(planListToShow==null){
+        if (planListToShow == null) {
             planListToShow = (ArrayList<TripPlan>) Main.tdm.getPlanList();
         }
 
@@ -96,7 +96,6 @@ public class TravelSearchPane extends JPanel {
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
 
-
         JPanel center = buildScheduleDetailArea();
 
         contentPanel.add(center, BorderLayout.CENTER);
@@ -116,7 +115,7 @@ public class TravelSearchPane extends JPanel {
 
         JPanel searchBar = buildSearchBar();
 
-        JLabel backIcon = new JLabel("<-"); // 텍스트 제거해서 사각형 공간 제거
+        JLabel backIcon = new JLabel("←"); // 텍스트 제거해서 사각형 공간 제거
 
         backIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
         backIcon.setForeground(TITLE_COLOR);
@@ -125,7 +124,7 @@ public class TravelSearchPane extends JPanel {
         backIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //  null을 Trip 타입으로 명시적 캐스팅하여 모호성 제거 (NPE 방지)
+                // null을 Trip 타입으로 명시적 캐스팅하여 모호성 제거 (NPE 방지)
                 Main.tdm.setCurrentTrip((main.java.domain.Trip) null);
 
                 card.show(root, "메인");
@@ -136,7 +135,7 @@ public class TravelSearchPane extends JPanel {
         JLabel title = new JLabel("여행가요");
         title.setForeground(TITLE_COLOR);
         title.setFont(new Font(CUSTOM_FONT_NAME, Font.BOLD, 26));
-        ImageIcon raw = new ImageIcon(Main.tdm.rootPath+"logo.png");
+        ImageIcon raw = new ImageIcon(Main.tdm.rootPath + "logo.png");
         Image img = raw.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
         title.setIcon(new ImageIcon(img));
         title.setIconTextGap(10);
@@ -218,10 +217,11 @@ public class TravelSearchPane extends JPanel {
                 : new Color(150, 150, 150);
 
         String planTitle = (uidata.length > PLAN_TITLE && uidata[PLAN_TITLE] != null) ? uidata[PLAN_TITLE] : "제목 미정";
-        String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] != null) ?  uidata[PLAN_DATE] : "";
-        String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] != null) ?  uidata[PLAN_TIME] : "00:00";
-        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] != null) ?  uidata[PLAN_LOC] : "위치 미정";
-        String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] != null) ?  uidata[PLAN_REVIEW] : "설명 없음";
+        String planDate = (uidata.length > PLAN_DATE && uidata[PLAN_DATE] != null) ? uidata[PLAN_DATE] : "";
+        String planTime = (uidata.length > PLAN_TIME && uidata[PLAN_TIME] != null) ? uidata[PLAN_TIME] : "00:00";
+        String planLoc = (uidata.length > PLAN_LOC && uidata[PLAN_LOC] != null) ? uidata[PLAN_LOC] : "위치 미정";
+        String planReview = (uidata.length > PLAN_REVIEW && uidata[PLAN_REVIEW] != null) ? uidata[PLAN_REVIEW]
+                : "설명 없음";
 
         JLabel dot = new JLabel("●");
         dot.setForeground(planColor);
@@ -237,12 +237,12 @@ public class TravelSearchPane extends JPanel {
         t.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // 수정>>시간 아이콘 이미지 삽입
-        ImageIcon timeRaw = new ImageIcon(Main.tdm.rootPath+"dal2.png");
+        ImageIcon timeRaw = new ImageIcon(Main.tdm.rootPath + "dal2.png");
         Image timeImg = timeRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon timeIcon = new ImageIcon(timeImg);
 
         // 위치 아이콘 이미지 삽입
-        ImageIcon locRaw = new ImageIcon(Main.tdm.rootPath+"wich.png");
+        ImageIcon locRaw = new ImageIcon(Main.tdm.rootPath + "wich.png");
         Image locImg = locRaw.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH);
         ImageIcon locIcon = new ImageIcon(locImg);
 
@@ -321,8 +321,7 @@ public class TravelSearchPane extends JPanel {
         searchField.setBackground(new Color(240, 240, 240));
         searchField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                new EmptyBorder(5, 10, 5, 10)
-        ));
+                new EmptyBorder(5, 10, 5, 10)));
 
         // Placeholder 기능
         searchField.addFocusListener(new FocusAdapter() {
@@ -333,6 +332,7 @@ public class TravelSearchPane extends JPanel {
                     searchField.setForeground(TITLE_COLOR);
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (searchField.getText().isEmpty()) {
@@ -342,20 +342,35 @@ public class TravelSearchPane extends JPanel {
             }
         });
 
-        // 돋보기 아이콘 추가
-        JLabel searchIcon = new JLabel("🔍");
-        searchIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 16));
+        // 수정 >> 돋보기 아이콘 추가
+        JLabel searchIcon = new JLabel();
         searchIcon.setBorder(new EmptyBorder(0, 5, 0, 5));
         searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        String iconPath = Main.tdm.rootPath + "search.png";
+        ImageIcon rawSearch = new ImageIcon(iconPath);
+        System.out.println("[TravelSearchPane] search icon path = " + iconPath
+                + " / w=" + rawSearch.getIconWidth() + ", h=" + rawSearch.getIconHeight());
+
+        if (rawSearch.getIconWidth() > 0 && rawSearch.getIconHeight() > 0) {
+            Image searchImg = rawSearch.getImage()
+                    .getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+            searchIcon.setIcon(new ImageIcon(searchImg));
+        } else {
+
+            searchIcon.setText("🔍");
+            searchIcon.setFont(new Font("Dialog", Font.PLAIN, 25));
+        }
+
+        // 3) 클릭 시 검색 실행
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e){
-                String searchFieldText=searchField.getText();
-                if(searchFieldText.isEmpty()||searchFieldText.equals("검색어를 입력하세요")){
-                    planListToShow=null;
-                }
-                else{
-                    planListToShow=(ArrayList<TripPlan>)(Main.tdm.findAllPlans(searchField.getText()));
+            public void mouseClicked(MouseEvent e) {
+                String searchFieldText = searchField.getText();
+                if (searchFieldText.isEmpty() || searchFieldText.equals("검색어를 입력하세요")) {
+                    planListToShow = null;
+                } else {
+                    planListToShow = (ArrayList<TripPlan>) Main.tdm.findAllPlans(searchFieldText);
                 }
                 refreshPlanListUI();
             }

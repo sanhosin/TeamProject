@@ -38,9 +38,7 @@ public class MainPane extends JPanel {
 
     private JPanel listContainer;
     private TravelSearchPane travelSearchPanelRef;
-    private ArrayList<Trip> tripListToShow=null;
-
-    
+    private ArrayList<Trip> tripListToShow = null;
 
     public MainPane(JPanel root, CardLayout card) {
         this.root = root;
@@ -186,8 +184,8 @@ public class MainPane extends JPanel {
 
         listContainer.removeAll();
 
-        if(tripListToShow==null)tripListToShow=(ArrayList<Trip>)Main.tdm.getTripList();
-
+        if (tripListToShow == null)
+            tripListToShow = (ArrayList<Trip>) Main.tdm.getTripList();
 
         if (tripListToShow != null) {
             for (Trip t : tripListToShow) {
@@ -214,7 +212,7 @@ public class MainPane extends JPanel {
         menuBox.setPreferredSize(new Dimension(40, 40)); // 직사각형 크기
         menuBox.setOpaque(false); // 배경 투명
 
-        ImageIcon headerRaw = new ImageIcon(Main.tdm.rootPath+"menu.png");
+        ImageIcon headerRaw = new ImageIcon(Main.tdm.rootPath + "menu.png");
         Image headerImg = headerRaw.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         JLabel menuIcon = new JLabel(new ImageIcon(headerImg));
 
@@ -262,7 +260,7 @@ public class MainPane extends JPanel {
         panel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
         // 수정>> 나의여행
-        ImageIcon rawIcon2 = new ImageIcon(Main.tdm.rootPath+"dal1.png");
+        ImageIcon rawIcon2 = new ImageIcon(Main.tdm.rootPath + "dal1.png");
         Image img2 = rawIcon2.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
         ImageIcon icon2 = new ImageIcon(img2);
 
@@ -295,8 +293,8 @@ public class MainPane extends JPanel {
 
         // 카드 크기 상수 (가로/세로 비율 유지)
         final int CARD_HEIGHT = 170;
-        final int IMAGE_WIDTH = 200;
-        final int IMAGE_HEIGHT = 170;
+        final int IMAGE_WIDTH = 260;
+        final int IMAGE_HEIGHT = 180;
         final int CARD_INNER_MARGIN = 3;
 
         // 최대 크기 설정으로 늘어남 방지 (세로 고정)
@@ -306,7 +304,7 @@ public class MainPane extends JPanel {
         card.setBackground(CARD_COLOR);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(CARD_INNER_MARGIN,CARD_INNER_MARGIN, CARD_INNER_MARGIN, 10)));
+                new EmptyBorder(CARD_INNER_MARGIN, CARD_INNER_MARGIN, CARD_INNER_MARGIN, 10)));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -322,59 +320,51 @@ public class MainPane extends JPanel {
             }
         });
 
+        // 🔹 이미지 영역 (전체 교체)
         JPanel imagePanel = new JPanel(new BorderLayout());
         imagePanel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
         imagePanel.setBackground(CARD_COLOR);
 
         JLabel imageLabel = new JLabel();
         imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
-
-        String[] uidata = t.getUidata();
-        String tripTitle = uidata[Trip.TRIP_TITLE];
-
-        String tripImgPath = uidata[Trip.TRIP_IMG];
-
-        // 🔹 imageLabel 에 아이콘 세팅
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setVerticalAlignment(SwingConstants.CENTER);
 
-        if (tripImgPath != null && !tripImgPath.isEmpty() && !tripImgPath.equals("default.jpg")) {
-            try {
-                ImageIcon rawIcon;
+        // 여행 제목 가져오기
+        String[] uidata = t.getUidata();
+        String tripTitle = uidata[Trip.TRIP_TITLE];
 
-                if (new java.io.File(tripImgPath).isAbsolute()) {
-                    rawIcon = new ImageIcon(tripImgPath);
-                } else {
-                    // 비정상적이거나 상대 경로일 경우 rootPath를 붙여 시도
-                    rawIcon = new ImageIcon(Main.tdm.rootPath + tripImgPath);
-                }
-
-                Image originalImage = rawIcon.getImage();
-
-                // 이미지 로딩 성공 확인
-                if (originalImage.getWidth(null) > 0 && originalImage.getHeight(null) > 0) {
-                    Image scaledImg = originalImage.getScaledInstance(
-                            IMAGE_WIDTH,
-                            IMAGE_HEIGHT,
-                            Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(scaledImg));
-                } else {
-                    System.err.println("Warning: Image data not loaded for path: " + tripImgPath);
-                }
-
-            } catch (Exception ex) {
-                System.err.println("Error loading image from path: " + tripImgPath + " -> " + ex.getMessage());
-            }
+        // 수정>> 제목에 따라 이미지 파일 결정
+        String imgPathFull;
+        if (tripTitle != null && tripTitle.contains("일본")) {
+            // 일본여행 카드
+            imgPathFull = Main.tdm.rootPath + "tokyo.jpg";
+        } else if (tripTitle != null && tripTitle.contains("스키")) {
+            // 스키장 카드
+            imgPathFull = Main.tdm.rootPath + "skii.jpg";
         } else {
-            // 기본 이미지 로직 사용
-            ImageIcon rawIcon = new ImageIcon(Main.tdm.rootPath + "default.png");
-            Image scaledImg = rawIcon.getImage().getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(scaledImg));
+            // 그 외 여행은 기본 이미지
+            imgPathFull = Main.tdm.rootPath + "default.png";
         }
 
-        // 🔹 회색 박스(imagePanel) 가운데에 imageLabel 올리기
-        imagePanel.add(imageLabel, BorderLayout.CENTER);
+        // 디버그용 로그 (원하면 콘솔에서 확인)
+        System.out.println("tripTitle = " + tripTitle + ", imgPath = " + imgPathFull);
 
+        // 🔹 이미지 로딩 & 스케일링
+        ImageIcon rawIcon = new ImageIcon(imgPathFull);
+        Image originalImage = rawIcon.getImage();
+
+        if (originalImage.getWidth(null) > 0 && originalImage.getHeight(null) > 0) {
+            Image scaledImg = originalImage.getScaledInstance(
+                    IMAGE_WIDTH,
+                    IMAGE_HEIGHT,
+                    Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImg));
+        } else {
+            System.err.println("이미지 로딩 실패: " + imgPathFull);
+        }
+
+        imagePanel.add(imageLabel, BorderLayout.CENTER);
         card.add(imagePanel, BorderLayout.WEST);
 
         JPanel textPanel = new JPanel();
@@ -390,7 +380,7 @@ public class MainPane extends JPanel {
 
         String toLocationLabel = (t.getPlanList().isEmpty()) ? "미정" : t.getLocationDetail();
 
-        ImageIcon pinRaw = new ImageIcon(Main.tdm.rootPath+"wich.png");
+        ImageIcon pinRaw = new ImageIcon(Main.tdm.rootPath + "wich.png");
         Image pinScaled = pinRaw.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
         ImageIcon pinIcon = new ImageIcon(pinScaled);
 
@@ -466,8 +456,7 @@ public class MainPane extends JPanel {
         searchField.setBackground(new Color(240, 240, 240));
         searchField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                new EmptyBorder(5, 10, 5, 10)
-        ));
+                new EmptyBorder(5, 10, 5, 10)));
 
         searchField.addFocusListener(new FocusAdapter() {
             @Override
@@ -477,6 +466,7 @@ public class MainPane extends JPanel {
                     searchField.setForeground(TITLE_COLOR);
                 }
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 if (searchField.getText().isEmpty()) {
@@ -486,28 +476,47 @@ public class MainPane extends JPanel {
             }
         });
 
-        // 돋보기 아이콘 추가
-        JLabel searchIcon = new JLabel("🔍");
-        searchIcon.setFont(new Font(CUSTOM_FONT_NAME, Font.PLAIN, 16));
+        // >>수정 : 돋보기 아이콘 추가
+
+        JLabel searchIcon = new JLabel();
         searchIcon.setBorder(new EmptyBorder(0, 5, 0, 5));
         searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // 이미지 로딩 시도
+        String iconPath = Main.tdm.rootPath + "search.png";
+        System.out.println("[DEBUG] 검색 아이콘 경로: " + iconPath);
+
+        ImageIcon rawSearch = new ImageIcon(iconPath);
+
+        // 이미지 로딩 성공 여부 체크
+        if (rawSearch.getIconWidth() > 0 && rawSearch.getIconHeight() > 0) {
+            // 이미지 정상 로딩 → 스케일링 후 아이콘으로 표시
+            Image searchImg = rawSearch.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            searchIcon.setIcon(new ImageIcon(searchImg));
+        } else {
+            // 이미지 로딩 실패 → 이모티콘 표시 (배경 없음)
+            searchIcon.setText("🔍");
+            searchIcon.setFont(new Font("Dialog", Font.PLAIN, 25));
+        }
+
+        // 🔎 클릭 시 검색 실행
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e){
-                String searchFieldText=searchField.getText();
-                if(searchFieldText.isEmpty()||searchFieldText.equals("검색어를 입력하세요")){
-                    tripListToShow=null;
+            public void mouseClicked(MouseEvent e) {
+                String searchFieldText = searchField.getText();
+
+                if (searchFieldText.isEmpty() || searchFieldText.equals("검색어를 입력하세요")) {
+                    tripListToShow = null;
+                } else {
+                    tripListToShow = (ArrayList<Trip>) Main.tdm.getLoginedUser().findAllTrip(searchFieldText);
                 }
-                else{
-                    tripListToShow=(ArrayList<Trip>)(Main.tdm.getLoginedUser().findAllTrip(searchField.getText()));
-                }
+
                 refreshTripListUI();
             }
         });
 
         searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchIcon, BorderLayout.EAST);
-
 
         return searchPanel;
     }

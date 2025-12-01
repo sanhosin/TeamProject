@@ -26,7 +26,6 @@ public class Main {
     TravelSearchPane travelSearchPanel; // 여행지 검색 화면 (새로 추가)
     JoinPane joinPanel; // 회원가입 화면
 
-
     void mymain() {
         // 1. MainPane을 먼저 인스턴스화합니다.
         mainPanel = new MainPane(root, card);
